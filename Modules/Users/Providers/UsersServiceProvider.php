@@ -7,22 +7,10 @@ use Illuminate\Database\Eloquent\Factory;
 
 class UsersServiceProvider extends ServiceProvider
 {
-    /**
-     * @var string $moduleName
-     */
-    protected $moduleName = 'Users';
+    protected string $moduleName = 'Users';
+    protected string $moduleNameLower = 'users';
 
-    /**
-     * @var string $moduleNameLower
-     */
-    protected $moduleNameLower = 'users';
-
-    /**
-     * Boot the application events.
-     *
-     * @return void
-     */
-    public function boot()
+    public function boot(): void
     {
         $this->registerTranslations();
         $this->registerConfig();
@@ -30,57 +18,44 @@ class UsersServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
+    public function register(): void
     {
-        $this->app->register(RouteServiceProvider::class);
+        // Carga el RouteServiceProvider si lo tienes
+        if (class_exists($this->moduleNamespace().'\\RouteServiceProvider')) {
+            $this->app->register($this->moduleNamespace().'\\RouteServiceProvider');
+        }
     }
 
-    /**
-     * Register config.
-     *
-     * @return void
-     */
-    protected function registerConfig()
+    protected function registerConfig(): void
     {
         $this->publishes([
-            module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
+            module_path($this->moduleName, 'Config/config.php') => config_path("{$this->moduleNameLower}.php"),
         ], 'config');
+
         $this->mergeConfigFrom(
-            module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
+            module_path($this->moduleName, 'Config/config.php'),
+            $this->moduleNameLower
         );
     }
 
-    /**
-     * Register views.
-     *
-     * @return void
-     */
-    public function registerViews()
+    public function registerViews(): void
     {
-        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
-
+        $viewPath = resource_path("views/modules/{$this->moduleNameLower}");
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
-            $sourcePath => $viewPath
-        ], ['views', $this->moduleNameLower . '-module-views']);
+            $sourcePath => $viewPath,
+        ], ['views', "{$this->moduleNameLower}-module-views"]);
 
-        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
+        $this->loadViewsFrom(
+            array_merge($this->getPublishableViewPaths(), [$sourcePath]),
+            $this->moduleNameLower
+        );
     }
 
-    /**
-     * Register translations.
-     *
-     * @return void
-     */
-    public function registerTranslations()
+    public function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
+        $langPath = resource_path("lang/modules/{$this->moduleNameLower}");
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
@@ -91,24 +66,24 @@ class UsersServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
+    public function provides(): array
     {
         return [];
     }
 
-    private function getPublishableViewPaths(): array
+    protected function getPublishableViewPaths(): array
     {
         $paths = [];
-        foreach (\Config::get('view.paths') as $path) {
-            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
-                $paths[] = $path . '/modules/' . $this->moduleNameLower;
+        foreach (config('view.paths') as $path) {
+            if (is_dir("{$path}/modules/{$this->moduleNameLower}")) {
+                $paths[] = "{$path}/modules/{$this->moduleNameLower}";
             }
         }
         return $paths;
+    }
+
+    protected function moduleNamespace(): string
+    {
+        return "Modules\\{$this->moduleName}\\Providers";
     }
 }
