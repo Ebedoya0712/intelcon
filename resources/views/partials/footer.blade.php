@@ -1,5 +1,5 @@
 <footer class="main-footer">
-    <strong>Copyright &copy; {{ date('Y') }} 
+    <strong>Copyright &copy; {{ date('Y') }}
         <a href="#">INTELCOL</a>.
     </strong> Todos los derechos reservados.
     <div class="float-right d-none d-sm-inline-block">
