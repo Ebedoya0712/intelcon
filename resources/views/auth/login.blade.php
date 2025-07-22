@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intelcon - Iniciar Sesión</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         /* Estilo para un fondo con gradiente más atractivo */
@@ -40,18 +39,19 @@
                             <p class="text-muted">Intelcon-Gestión</p>
                         </div>
 
-                        <form method="POST" action="{{ route('login') }}">
+                        <form method="POST" action="{{ route('auth.attempt') }}">
                             @csrf {{-- Token de seguridad indispensable --}}
 
                             <div class="mb-3">
-                                <label for="cedula" class="form-label fw-bold">Ingrese su Cédula de Identidad</label>
+                                <label for="identification" class="form-label fw-bold">Ingrese su Cédula de Identidad</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
-                                    <input type="text" id="cedula" name="cedula" value="{{ old('cedula') }}" 
-                                           class="form-control @error('cedula') is-invalid @enderror" 
+                                    {{-- El name="identification" debe coincidir con el del controlador --}}
+                                    <input type="text" id="identification" name="identification" value="{{ old('identification') }}" 
+                                           class="form-control @error('identification') is-invalid @enderror" 
                                            placeholder="V-12345678" required autofocus>
                                     
-                                    @error('cedula')
+                                    @error('identification')
                                         <div class="invalid-feedback">
                                             {{ $message }}
                                         </div>
@@ -86,29 +86,43 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Los scripts ahora son manejados por Vite, pero el código específico de la página va aquí --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const cedulaInput = document.getElementById('cedula');
+            // Script para el colapso de la contraseña
+            const identificationInput = document.getElementById('identification');
             const passwordCollapseEl = document.getElementById('passwordCollapse');
             const passwordInput = document.getElementById('password');
             
-            // Inicializa el componente Collapse de Bootstrap sin mostrarlo
             const bsCollapse = new bootstrap.Collapse(passwordCollapseEl, {
                 toggle: false
             });
 
-            cedulaInput.addEventListener('input', function() {
-                // Si el campo de cédula tiene texto, muestra el campo de contraseña
+            identificationInput.addEventListener('input', function() {
                 if (this.value.length > 0) {
                     bsCollapse.show();
                     passwordInput.required = true;
                 } else {
-                    // Si está vacío, lo oculta
                     bsCollapse.hide();
                     passwordInput.required = false;
                 }
             });
+
+            // Script para SweetAlert2
+            @if (session('error_user_not_found'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Acceso Denegado',
+                    text: '{{ session('error_user_not_found') }}',
+                    confirmButtonText: 'Registrarme',
+                    confirmButtonColor: '#198754',
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{{ route("solicitud.acceso") }}';
+                    }
+                });
+            @endif
         });
     </script>
 </body>

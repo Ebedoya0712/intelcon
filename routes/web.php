@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
 
@@ -15,6 +16,11 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('auth.login'); // Asegúrate que la vista exista en resources/views/auth/login.blade.php
 })->name('login');
+
+
+// Ruta que procesa el formulario de inicio de sesión
+Route::post('/acceder', [AuthController::class, 'login'])->name('auth.attempt');
+
 
 
 // Ruta para mostrar la vista de solicitud de acceso

@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crea un usuario administrador de ejemplo
+        // Crea un usuario administrador con los campos correctos según la migración
         User::create([
             'first_name'        => 'Eliecer',
             'last_name'         => 'Bedoya',
@@ -26,8 +26,5 @@ class UserSeeder extends Seeder
             'state_id'          => 1, // Asegúrate de que el estado con ID 1 exista
             'remember_token'    => Str::random(10),
         ]);
-
-        // Crea más usuarios de prueba si quieres (opcional)
-        // User::factory()->count(5)->create();
     }
 }
