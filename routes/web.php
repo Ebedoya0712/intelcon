@@ -17,6 +17,11 @@ Route::get('/login', function () {
 })->name('login');
 
 
+// Ruta para mostrar la vista de solicitud de acceso
+Route::get('/solicitud-acceso', function () {
+    return view('auth.solicitud');
+})->name('solicitud.acceso');
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
