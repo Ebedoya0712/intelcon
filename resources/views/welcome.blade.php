@@ -486,7 +486,7 @@
         <nav class="container">
             <div class="logo">
                 <a href="/">
-                    <img src="{{ asset('images/intelconn.jpg') }}" alt="Logo de Intelcon" style="height: 115px; margin-right: 10px; vertical-align: middle;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo de Intelcon" style="height: 125px; margin-right: 10px; vertical-align: middle;">
                 </a>
             </div>
             <ul class="nav-links">
