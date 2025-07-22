@@ -6,6 +6,18 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
 
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Ruta para MOSTRAR el formulario de login
+Route::get('/login', function () {
+    return view('auth.login'); // Asegúrate que la vista exista en resources/views/auth/login.blade.php
+})->name('login');
+
+
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
