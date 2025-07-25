@@ -45,31 +45,33 @@
                         </div>
 
                         {{-- El action se conectará a la ruta 'solicitud.send' cuando implementes la lógica --}}
-                        <form method="POST" action="#">
+                                                <form method="POST" action="{{ route('solicitud.send') }}">
                             @csrf
 
                             <div class="mb-3">
-                                <label for="cedula" class="form-label fw-bold">Cédula de Identidad</label>
+                                <label for="identification" class="form-label fw-bold">Cédula de Identidad</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
-                                    <input type="text" id="cedula" name="cedula" value="{{ old('cedula', 'V-12345678') }}"" 
-                                           class="form-control bg-light" readonly>
+                                    {{-- Corregido: name="identification" y un error de comillas extra --}}
+                                    <input type="text" id="identification" name="identification" value="{{ old('identification') }}" class="form-control bg-light">
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="nombre" class="form-label fw-bold">Nombre</label>
+                                <label for="first_name" class="form-label fw-bold">Nombre</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Escribe tu nombre" required>
+                                    {{-- Corregido: name="first_name" --}}
+                                    <input type="text" id="first_name" name="first_name" class="form-control" placeholder="Escribe tu nombre" required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="apellido" class="form-label fw-bold">Apellido</label>
+                                <label for="last_name" class="form-label fw-bold">Apellido</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Escribe tu apellido" required>
+                                    {{-- Corregido: name="last_name" --}}
+                                    <input type="text" id="last_name" name="last_name" class="form-control" placeholder="Escribe tu apellido" required>
                                 </div>
                             </div>
 
@@ -82,7 +84,6 @@
                             </div>
 
                             <div class="d-grid mt-4">
-                                {{-- Usamos un color verde para diferenciar la acción de 'solicitud' --}}
                                 <button type="submit" class="btn btn-success btn-lg fw-bold">
                                     <i class="bi bi-whatsapp"></i> Enviar Solicitud
                                 </button>

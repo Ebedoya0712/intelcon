@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+// Añade la importación del contrato
+
+use App\Notifications\VerifyEmailNotification;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+// Implementa el contrato en la declaración de la clase
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, Notifiable;
 
@@ -16,13 +21,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name',       // Corregido
-        'last_name',        // Corregido
-        'identification',   // Corregido
+        'first_name',
+        'last_name',
+        'identification',
         'email',
         'password',
         'address',
-        'profile_photo',    // Corregido
+        'profile_photo',
         'service',
         'state_id',
         'role_id',
@@ -49,6 +54,10 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailNotification);
+    }
 
     public function role()
     {

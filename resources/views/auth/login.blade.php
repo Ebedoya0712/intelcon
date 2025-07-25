@@ -15,14 +15,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
         .card {
             border: none;
             border-radius: 1rem;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card:focus-within {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 0 0.25rem rgba(0, 123, 255, 0.3);
         }
         .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            box-shadow: none;
+        }
+        .forgot-password-link {
+            font-size: 0.9rem;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -30,23 +48,23 @@
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-lg p-4">
+            <div class="col-md-7 col-lg-6 col-xl-5">
+                <div class="card p-5">
                     <div class="card-body">
-                        <div class="text-center mb-4">
-                            <img src="{{ asset('images/intelconn.jpg') }}" alt="Logo de Intelcon" class="mx-auto mb-3" style="width: 180px;">
-                            <h2 class="card-title mt-3 mb-1">Acceso al Sistema</h2>
-                            <p class="text-muted">Intelcon-Gestión</p>
+                        <!-- Contenedor del encabezado -->
+                        <div class="d-flex flex-column align-items-center mb-4">
+                            <h2 class="card-title fw-bold mb-3">Acceso al Sistema</h2>
+                            <img src="{{ asset('images/intelconn.jpg') }}" alt="Logo de Intelcon" class="mb-3" style="width: 150px;">
+                            <p class="text-muted small">Intelcon Gestión</p>
                         </div>
 
                         <form method="POST" action="{{ route('auth.attempt') }}">
-                            @csrf {{-- Token de seguridad indispensable --}}
+                            @csrf
 
                             <div class="mb-3">
-                                <label for="identification" class="form-label fw-bold">Ingrese su Cédula de Identidad</label>
+                                <label for="identification" class="form-label fw-bold">Cédula de Identidad</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
-                                    {{-- El name="identification" debe coincidir con el del controlador --}}
                                     <input type="text" id="identification" name="identification" value="{{ old('identification') }}" 
                                            class="form-control @error('identification') is-invalid @enderror" 
                                            placeholder="V-12345678" required autofocus>
@@ -61,7 +79,7 @@
 
                             <div class="collapse" id="passwordCollapse">
                                 <div class="mb-3">
-                                    <label for="password" class="form-label fw-bold">Ingrese su Contraseña</label>
+                                    <label for="password" class="form-label fw-bold">Contraseña</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
                                         <input type="password" id="password" name="password" 
@@ -69,6 +87,21 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- INICIO: SECCIÓN DE RECUÉRDAME Y OLVIDÉ CONTRASEÑA -->
+                            <div class="d-flex justify-content-between align-items-center my-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                                    <label class="form-check-label" for="remember">
+                                        Recuérdame
+                                    </label>
+                                </div>
+                                <div>
+                                    {{-- ENLACE CORREGIDO --}}
+                                    <a href="{{ route('password.request') }}" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
+                                </div>
+                            </div>
+                            <!-- FIN: NUEVA SECCIÓN -->
 
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg fw-bold">
@@ -78,7 +111,7 @@
                         </form>
 
                         <div class="text-center mt-4">
-                             <small class="text-muted">&copy; 2025 Intelcon. Todos los derechos reservados.</small>
+                             <small class="text-muted">&copy; {{ date('Y') }} Intelcon. Todos los derechos reservados.</small>
                         </div>
                     </div>
                 </div>
@@ -86,10 +119,8 @@
         </div>
     </div>
 
-    {{-- Los scripts ahora son manejados por Vite, pero el código específico de la página va aquí --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Script para el colapso de la contraseña
             const identificationInput = document.getElementById('identification');
             const passwordCollapseEl = document.getElementById('passwordCollapse');
             const passwordInput = document.getElementById('password');
@@ -108,7 +139,6 @@
                 }
             });
 
-            // Script para SweetAlert2
             @if (session('error_user_not_found'))
                 Swal.fire({
                     icon: 'error',

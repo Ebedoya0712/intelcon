@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             'last_name'         => 'Bedoya',
             'identification'    => '12345678',
             'email'             => 'admin@example.com',
-            'email_verified_at' => now(),
+            //'email_verified_at' => now(),
             'password'          => Hash::make('password'),
             'address'           => 'Calle Principal #123',
             'profile_photo'     => 'default.png',
