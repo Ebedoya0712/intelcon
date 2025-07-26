@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OverduePaymentNotification;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -17,7 +21,13 @@ class PaymentController extends Controller
     public function index(Request $request)
 {
     if ($request->ajax()) {
+        // Base query
         $payments = Payment::with('user')->select('payments.*');
+        
+        // Si no es admin (rol_id != 1), filtrar solo los pagos del usuario autenticado
+        if (auth()->user()->role_id != 1) {
+            $payments->where('user_id', auth()->id());
+        }
         
         return DataTables::of($payments)
             ->addColumn('user_name', function($payment) {
@@ -38,16 +48,21 @@ class PaymentController extends Controller
                     : 'Sin comprobante';
             })
             ->addColumn('actions', function($payment) {
-                return '
-                    <div class="btn-group">
-                        <a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-primary">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <button class="btn btn-sm btn-danger delete-btn" data-id="'.$payment->id.'">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                ';
+                $editButton = '';
+                $deleteButton = '';
+                
+                // Solo mostrar botones de editar/eliminar si es admin o el pago es del usuario
+                if (auth()->user()->role_id == 1 || $payment->user_id == auth()->id()) {
+                    $editButton = '<a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>';
+                    
+                    $deleteButton = '<button class="btn btn-sm btn-danger delete-btn" data-id="'.$payment->id.'">
+                                    <i class="fas fa-trash"></i>
+                                    </button>';
+                }
+                
+                return '<div class="btn-group">'.$editButton.$deleteButton.'</div>';
             })
             ->rawColumns(['status_badge', 'receipt_link', 'actions'])
             ->make(true);
@@ -185,9 +200,169 @@ class PaymentController extends Controller
     /**
      * Muestra los pagos pendientes.
      */
-    public function pending()
-    {
-        $payments = Payment::where('status', 'pending')->with('user')->latest()->paginate(15);
-        return view('payments.pending', compact('payments'));
+    public function pending(Request $request)
+{
+    if ($request->ajax()) {
+        $payments = Payment::with('user')
+            ->where('status', 'pending')
+            ->select('payments.*');
+        
+        // Si no es admin, filtrar solo los pagos del usuario
+        if (auth()->user()->role_id != 1) {
+            $payments->where('user_id', auth()->id());
+        }
+        
+        return DataTables::of($payments)
+            ->addColumn('user_name', function($payment) {
+                return $payment->user->first_name . ' ' . $payment->user->last_name;
+            })
+            ->addColumn('formatted_amount', function($payment) {
+                return '$' . number_format($payment->amount, 2);
+            })
+            ->addColumn('receipt_link', function($payment) {
+                return $payment->receipt_path 
+                    ? '<a href="'.asset('storage/'.$payment->receipt_path).'" target="_blank">Ver comprobante</a>'
+                    : 'Sin comprobante';
+            })
+            ->addColumn('actions', function($payment) {
+                $buttons = '';
+                if (auth()->user()->role_id == 1) {
+                    $buttons = '
+                        <div class="btn-group">
+                            <a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Revisar
+                            </a>
+                        </div>
+                    ';
+                }
+                return $buttons;
+            })
+            ->rawColumns(['receipt_link', 'actions'])
+            ->make(true);
+    }
+
+    return view('payments.pending');
+}
+
+public function overdue(Request $request)
+{
+    if ($request->ajax()) {
+        $payments = Payment::with('user')
+            ->where('status', 'overdue')
+            ->select('payments.*');
+        
+        // Si no es admin, filtrar solo los pagos del usuario
+        if (auth()->user()->role_id != 1) {
+            $payments->where('user_id', auth()->id());
+        }
+        
+        return DataTables::of($payments)
+            ->addColumn('user_name', function($payment) {
+                return $payment->user->first_name . ' ' . $payment->user->last_name;
+            })
+            ->addColumn('formatted_amount', function($payment) {
+                return '$' . number_format($payment->amount, 2);
+            })
+            ->addColumn('days_overdue', function($payment) {
+                $dueDate = \Carbon\Carbon::parse($payment->month_paid)->endOfMonth();
+                return $dueDate->diffInDays(now()) . ' días';
+            })
+            ->addColumn('receipt_link', function($payment) {
+                return $payment->receipt_path 
+                    ? '<a href="'.asset('storage/'.$payment->receipt_path).'" target="_blank">Ver comprobante</a>'
+                    : 'Sin comprobante';
+            })
+            ->addColumn('actions', function($payment) {
+                $buttons = '';
+                if (auth()->user()->role_id == 1) {
+                    $buttons = '
+                        <div class="btn-group">
+                            <a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-warning">
+                                <i class="fas fa-exclamation-circle"></i> Regularizar
+                            </a>
+                            <button class="btn btn-sm btn-danger notify-btn" data-id="'.$payment->id.'">
+                                <i class="fas fa-bell"></i> Notificar
+                            </button>
+                        </div>
+                    ';
+                } else {
+                    $buttons = '
+                        <div class="btn-group">
+                            <a href="'.route('payments.create').'" class="btn btn-sm btn-primary">
+                                <i class="fas fa-money-bill-wave"></i> Pagar
+                            </a>
+                        </div>
+                    ';
+                }
+                return $buttons;
+            })
+            ->rawColumns(['receipt_link', 'actions'])
+            ->make(true);
+    }
+
+    return view('payments.overdue');
+    }
+
+
+public function notifyAllOverdue(Request $request)
+{
+    // Validar que el usuario sea administrador
+    if (auth()->user()->role_id != 1) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No tienes permisos para realizar esta acción'
+        ], 403);
+    }
+
+    // Obtener el mes actual y el anterior
+    $currentMonth = Carbon::now()->format('Y-m');
+    $previousMonth = Carbon::now()->subMonth()->format('Y-m');
+
+    // Obtener los pagos morosos con sus usuarios (solo los verificados)
+    $overduePayments = Payment::with(['user' => function($query) {
+            $query->whereNotNull('email_verified_at');
+        }])
+        ->where('status', 'overdue')
+        ->whereIn('month_paid', [$currentMonth, $previousMonth])
+        ->get(); // ¡Importante! get() para obtener la colección
+
+    $notified = 0;
+    $failed = 0;
+
+    foreach ($overduePayments as $payment) {
+        try {
+            // Verificar que el usuario y su email existan
+            if (!$payment->user || !filter_var($payment->user->email, FILTER_VALIDATE_EMAIL)) {
+                Log::warning("Usuario sin email válido - Pago ID: {$payment->id}");
+                $failed++;
+                continue;
+            }
+
+            // Enviar notificación (versión síncrona)
+            Mail::to($payment->user->email)
+                ->send(new OverduePaymentNotification($payment));
+
+            // Actualizar registro del pago
+            $payment->update([
+                'last_notified_at' => now(),
+                'notification_count' => $payment->notification_count + 1
+            ]);
+
+            $notified++;
+
+        } catch (\Exception $e) {
+            Log::error("Error notificando pago ID {$payment->id}: " . $e->getMessage());
+            $failed++;
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => "Notificaciones enviadas: {$notified} exitosas, {$failed} fallidas",
+        'data' => [
+            'notified' => $notified,
+            'failed' => $failed
+        ]
+    ]);
     }
 }

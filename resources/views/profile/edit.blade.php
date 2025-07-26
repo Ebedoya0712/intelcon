@@ -1,239 +1,280 @@
 @extends('layouts.app')
 
-@section('title', 'Registrar Pago')
+@section('title', 'Mi Perfil')
 
 @section('content')
-<!-- Encabezado de Página -->
+
+<!-- ENCABEZADO DE PÁGINA -->
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Registrar Mi Pago</h1>
-            </div>
+                <h1 class="m-0">Editar Perfil de Usuario</h1>
+            </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Inicio</a></li>
-                    <li class="breadcrumb-item active">Registrar Pago</li>
+                    <li class="breadcrumb-item active">Perfil</li>
                 </ol>
-            </div>
-        </div>
-    </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
 </div>
 
-<!-- Contenido Principal -->
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">Registrar Información del Pago</h3>
-                    <p class="card-subtitle text-sm mt-1">Por favor sube el comprobante de tu pago</p>
-                </div>
-                <!-- /.card-header -->
-                <!-- form start -->
-                <form method="POST" action="{{ route('payments.store') }}" enctype="multipart/form-data" id="paymentForm">
-                    @csrf
-                    <div class="card-body">
-                        <!-- Campos ocultos para Cliente -->
-                        <input type="hidden" name="user_id" value="{{ Auth::id() }}">
-                        <input type="hidden" name="status" value="pending">
-
-                        <div class="form-group">
-                            <label for="amount">Monto Pagado ($)</label>
-                            <input type="number" step="0.01" class="form-control @error('amount') is-invalid @enderror" 
-                                   id="amount" name="amount" value="{{ old('amount') }}" 
-                                   placeholder="Ej: 50.00" required>
-                            @error('amount') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="payment_date">Fecha del Pago</label>
-                                    <input type="date" class="form-control @error('payment_date') is-invalid @enderror" 
-                                           id="payment_date" name="payment_date" 
-                                           value="{{ old('payment_date', date('Y-m-d')) }}" required>
-                                    @error('payment_date') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="month_paid">Mes que estás pagando</label>
-                                    <input type="month" class="form-control @error('month_paid') is-invalid @enderror" 
-                                           id="month_paid" name="month_paid" 
-                                           value="{{ old('month_paid', date('Y-m')) }}" required>
-                                    @error('month_paid') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="receipt_path">Comprobante de Pago</label>
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input @error('receipt_path') is-invalid @enderror" 
-                                           id="receipt_path" name="receipt_path" required accept="image/*,.pdf">
-                                    <label class="custom-file-label" for="receipt_path" id="fileLabel">Seleccionar archivo...</label>
-                                </div>
-                            </div>
-                            @error('receipt_path') <span class="invalid-feedback d-block">{{ $message }}</span> @enderror
-                            <small class="form-text text-muted">
-                                Formatos aceptados: JPG, PNG, PDF. Tamaño máximo: 2MB
-                            </small>
-                            
-                            <!-- Preview de la imagen -->
-                            <div class="mt-3" id="imagePreviewContainer" style="display:none;">
-                                <h6>Vista previa:</h6>
-                                <div class="border p-2 text-center bg-light">
-                                    <img id="imagePreview" src="#" alt="Preview del comprobante" class="img-fluid" style="max-height: 200px; display: none;">
-                                    <div id="pdfPreview" style="display: none;">
-                                        <i class="fas fa-file-pdf fa-5x text-danger"></i>
-                                        <p class="mt-2 mb-0" id="pdfFileName"></p>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="removeImage">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="notes">Información adicional (Opcional)</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="2" 
-                                      placeholder="Ej: Número de transacción, referencia bancaria, etc.">{{ old('notes') }}</textarea>
-                        </div>
-
-                        <div class="alert alert-info mt-3">
-                            <i class="icon fas fa-info-circle"></i>
-                            Tu pago será verificado por nuestro equipo en un plazo máximo de 24 horas.
-                        </div>
-                    </div>
-                    <!-- /.card-body -->
-
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-check-circle mr-2"></i> Registrar Pago
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card card-primary card-outline">
+                <div class="card-body">
+                    
+                    <!-- SECCIÓN DE FOTO DE PERFIL -->
+                    <div class="text-center border-bottom pb-4 mb-4">
+                        <img id="profile-picture-preview" class="profile-user-img img-fluid img-circle mb-3"
+                             src="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : asset('images/user.png') }}"
+                             alt="Foto de perfil del usuario"
+                             style="width: 150px; height: 150px; object-fit: cover;">
+                        
+                        <h3 class="profile-username">{{ $user->first_name }} {{ $user->last_name }}</h3>
+                        <p class="text-muted">{{ $user->role->name ?? 'Cliente' }}</p>
+                        
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('profile_photo').click();">
+                            <i class="fas fa-camera"></i> Cambiar Foto
                         </button>
-                        <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">Cancelar</a>
                     </div>
-                </form>
+
+                    <!-- SECCIÓN DE INFORMACIÓN DEL PERFIL -->
+                    <h5 class="mb-3 text-primary">Información del Perfil</h5>
+                    <form class="form-horizontal" method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('patch')
+
+                        <input type="file" id="profile_photo" name="profile_photo" class="d-none">
+
+                        <div class="form-group row">
+                            <label for="first_name" class="col-sm-3 col-form-label">Nombre</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old('first_name', $user->first_name) }}">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="last_name" class="col-sm-3 col-form-label">Apellido</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name', $user->last_name) }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <label for="identification" class="col-sm-3 col-form-label">Cédula</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="identification" name="identification" value="{{ $user->identification }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="email" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <label for="address" class="col-sm-3 col-form-label">Dirección</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="address" name="address" value="{{ old('address', $user->address) }}">
+                            </div>
+                        </div>
+
+                        <!-- INICIO: CAMPOS DE UBICACIÓN -->
+                        <div class="form-group row">
+                            <label for="state_id" class="col-sm-3 col-form-label">Estado</label>
+                            <div class="col-sm-9">
+                                <select class="form-control @error('state_id') is-invalid @enderror" id="state_id" name="state_id" required>
+                                    <option value="">Seleccione un Estado</option>
+                                    @foreach($states as $state)
+                                        <option value="{{ $state->id }}" {{ old('state_id', $user->state_id) == $state->id ? 'selected' : '' }}>{{ $state->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('state_id')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="city_id" class="col-sm-3 col-form-label">Ciudad</label>
+                            <div class="col-sm-9">
+                                <select class="form-control @error('city_id') is-invalid @enderror" id="city_id" name="city_id" required>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city->id }}" {{ old('city_id', $user->city_id) == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('city_id')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="municipality_id" class="col-sm-3 col-form-label">Municipio</label>
+                            <div class="col-sm-9">
+                                <select class="form-control @error('municipality_id') is-invalid @enderror" id="municipality_id" name="municipality_id" required>
+                                     @foreach($municipalities as $municipality)
+                                        <option value="{{ $municipality->id }}" {{ old('municipality_id', $user->municipality_id) == $municipality->id ? 'selected' : '' }}>{{ $municipality->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('municipality_id')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                            </div>
+                        </div>
+                        <!-- FIN: CAMPOS DE UBICACIÓN -->
+
+                        <div class="form-group row">
+                            <div class="offset-sm-3 col-sm-9">
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- INICIO: SECCIÓN DE VERIFICACIÓN DE CORREO (AHORA FUERA DEL FORMULARIO ANTERIOR) -->
+                    @if (!$user->hasVerifiedEmail())
+                        <div class="form-group row mt-3">
+                            <div class="offset-sm-3 col-sm-9">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-light border rounded">
+                                    <span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Correo no verificado</span>
+                                    <form id="verification-form" method="POST" action="{{ route('verification.send') }}" class="m-0">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Verificar Correo</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    <!-- FIN: SECCIÓN DE VERIFICACIÓN DE CORREO -->
+
+                    <hr>
+
+                    <!-- SECCIÓN DE CAMBIAR CONTRASEÑA -->
+                    <h5 class="mb-3 text-danger">Actualizar Contraseña</h5>
+                    <form class="form-horizontal" method="post" action="{{ route('profile.password.update') }}">
+                        @csrf
+                        @method('put')
+                        
+                        <div class="form-group row">
+                            <label for="current_password" class="col-sm-3 col-form-label">Contraseña Actual</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="current_password" name="current_password" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="password" class="col-sm-3 col-form-label">Nueva Contraseña</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="password_confirmation" class="col-sm-3 col-form-label">Confirmar Contraseña</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="offset-sm-3 col-sm-9">
+                                <button type="submit" class="btn btn-danger">Actualizar Contraseña</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // --- SCRIPT PARA PREVIEW DE IMAGEN/PDF ---
-    const receiptInput = document.getElementById('receipt_path');
-    if (receiptInput) {
-        receiptInput.addEventListener('change', function(e) {
-            const file = this.files[0];
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            const imagePreview = document.getElementById('imagePreview');
-            const pdfPreview = document.getElementById('pdfPreview');
-            const fileLabel = document.getElementById('fileLabel');
-            
-            if (file) {
+    // --- SCRIPT PARA LA FOTO DE PERFIL ---
+    const photoInput = document.getElementById('profile_photo');
+    if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
                 const reader = new FileReader();
-                
-                // Mostrar el nombre del archivo
-                fileLabel.textContent = file.name;
-                
-                // Mostrar el contenedor de preview
-                previewContainer.style.display = 'block';
-                
-                if (file.type.match('image.*')) {
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                        pdfPreview.style.display = 'none';
-                    }
-                    reader.readAsDataURL(file);
-                } else if (file.type === 'application/pdf') {
-                    // Es un PDF
-                    imagePreview.style.display = 'none';
-                    pdfPreview.style.display = 'block';
-                    document.getElementById('pdfFileName').textContent = file.name;
+                reader.onload = function(event) {
+                    document.getElementById('profile-picture-preview').setAttribute('src', event.target.result);
                 }
+                reader.readAsDataURL(e.target.files[0]);
             }
         });
     }
 
-    // --- SCRIPT PARA ELIMINAR IMAGEN ---
-    const removeBtn = document.getElementById('removeImage');
-    if (removeBtn) {
-        removeBtn.addEventListener('click', function() {
-            document.getElementById('receipt_path').value = '';
-            document.getElementById('imagePreviewContainer').style.display = 'none';
-            document.getElementById('fileLabel').textContent = 'Seleccionar archivo...';
-        });
-    }
-
-    // --- SCRIPT PARA ENVÍO DEL FORMULARIO ---
-    const paymentForm = document.getElementById('paymentForm');
-    if (paymentForm) {
-        paymentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validación básica
-            if (!document.getElementById('receipt_path').files.length) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Debes subir un comprobante de pago',
-                    confirmButtonText: 'Entendido'
-                });
-                return;
-            }
-
-            // Mostrar confirmación
-            Swal.fire({
-                title: '¿Registrar pago?',
-                text: '¿Estás seguro de que deseas registrar este pago?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, registrar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Mostrar loader
-                    Swal.fire({
-                        title: 'Procesando...',
-                        html: 'Estamos registrando tu pago',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                            // Enviar el formulario
-                            paymentForm.submit();
-                        }
-                    });
+    // --- SCRIPT PARA SELECTS DINÁMICOS ---
+    const stateSelect = document.getElementById('state_id');
+    const citySelect = document.getElementById('city_id');
+    const municipalitySelect = document.getElementById('municipality_id');
+    
+    function fetchCities(stateId, selectedCityId = null) {
+        if (!stateId) {
+            citySelect.innerHTML = '<option value="">Seleccione una Ciudad</option>';
+            municipalitySelect.innerHTML = '<option value="">Seleccione un Municipio</option>';
+            return;
+        }
+        fetch('/api/get-cities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ state_id: stateId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let options = citySelect.innerHTML; // Conserva las opciones actuales si existen
+            data.forEach(city => {
+                const selected = selectedCityId == city.id ? 'selected' : '';
+                // Evita duplicados
+                if (!options.includes(`value="${city.id}"`)) {
+                    options += `<option value="${city.id}" ${selected}>${city.name}</option>`;
                 }
             });
+            citySelect.innerHTML = options;
         });
     }
 
-    // --- MOSTRAR MENSAJES DE ÉXITO/ERROR ---
-    @if(session('success'))
-        Swal.fire({
-            icon: 'success',
-            title: '¡Éxito!',
-            text: '{{ session('success') }}',
-            timer: 2000,
-            showConfirmButton: false
+    function fetchMunicipalities(cityId, selectedMunicipalityId = null) {
+        if (!cityId) {
+            municipalitySelect.innerHTML = '<option value="">Seleccione un Municipio</option>';
+            return;
+        }
+        fetch('/api/get-municipalities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ city_id: cityId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let options = municipalitySelect.innerHTML; // Conserva las opciones actuales si existen
+            data.forEach(municipality => {
+                const selected = selectedMunicipalityId == municipality.id ? 'selected' : '';
+                 if (!options.includes(`value="${municipality.id}"`)) {
+                    options += `<option value="${municipality.id}" ${selected}>${municipality.name}</option>`;
+                }
+            });
+            municipalitySelect.innerHTML = options;
         });
-    @endif
+    }
 
-    @if($errors->any())
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ $errors->first() }}',
-            confirmButtonText: 'Entendido'
-        });
+    stateSelect.addEventListener('change', function() {
+        citySelect.innerHTML = '<option value="">Cargando ciudades...</option>';
+        municipalitySelect.innerHTML = '<option value="">Seleccione una ciudad</option>';
+        fetchCities(this.value);
+    });
+
+    citySelect.addEventListener('change', function() {
+        municipalitySelect.innerHTML = '<option value="">Cargando municipios...</option>';
+        fetchMunicipalities(this.value);
+    });
+
+    // --- SCRIPTS PARA SWEETALERT2 ---
+    @if (session('success_profile'))
+        Swal.fire({ icon: 'success', title: '¡Éxito!', text: '{{ session('success_profile') }}', timer: 2000, showConfirmButton: false });
+    @endif
+    @if (session('success_password'))
+        Swal.fire({ icon: 'success', title: '¡Éxito!', text: '{{ session('success_password') }}', timer: 2000, showConfirmButton: false });
+    @endif
+    @if (session('verification-link-sent'))
+        Swal.fire({ icon: 'success', title: '¡Enviado!', text: '{{ session('verification-link-sent') }}', confirmButtonText: 'Entendido' });
     @endif
 });
 </script>
 @endpush
+
+@endsection

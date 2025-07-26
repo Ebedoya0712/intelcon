@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
 
     // Gestión de Pagos (Admin)
     Route::get('payments/pending', [PaymentController::class, 'pending'])->name('payments.pending');
+    Route::get('payments/overdue', [PaymentController::class, 'overdue'])->name('payments.overdue');
     Route::resource('payments', PaymentController::class)->except(['show']);
 
 });

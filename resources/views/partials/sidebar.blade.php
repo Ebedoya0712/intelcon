@@ -73,7 +73,7 @@
                                 <a href="{{ route('payments.pending') }}" class="nav-link"><i class="far fa-circle nav-icon text-warning"></i><p>Pagos Pendientes</p></a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{-- route('users.overdue') --}}" class="nav-link"><i class="far fa-circle nav-icon text-danger"></i><p>Clientes Morosos</p></a>
+                                <a href="{{ route('payments.overdue') }}" class="nav-link"><i class="far fa-circle nav-icon text-danger"></i><p>Clientes Con Pagos Morosos</p></a>
                             </li>
                         </ul>
                     </li>
@@ -88,9 +88,6 @@
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
                                 <a href="{{-- route('services.index') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Historial de Servicios</p></a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{-- route('services.create') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Mi Servicio</p></a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{-- route('services.create') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Servicio</p></a>

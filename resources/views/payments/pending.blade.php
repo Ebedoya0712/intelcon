@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Listado de Pagos')
+@section('title', 'Pagos Pendientes')
 
 @section('content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Listado de Pagos</h1>
+                <h1 class="m-0">Pagos Pendientes</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Inicio</a></li>
-                    <li class="breadcrumb-item active">Pagos</li>
+                    <li class="breadcrumb-item active">Pagos Pendientes</li>
                 </ol>
             </div>
         </div>
@@ -24,15 +24,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Todos los pagos registrados</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('payments.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus-circle mr-1"></i> Nuevo Pago
-                        </a>
-                    </div>
+                    <h3 class="card-title">Listado de pagos pendientes de aprobación</h3>
                 </div>
                 <div class="card-body">
-                    <table id="payments-table" class="table table-bordered table-hover w-100">
+                    <table id="pending-payments-table" class="table table-bordered table-hover w-100">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -40,9 +35,10 @@
                                 <th>Monto</th>
                                 <th>Fecha Pago</th>
                                 <th>Mes Pagado</th>
-                                <th>Estado</th>
                                 <th>Comprobante</th>
+                                @if(auth()->user()->role_id == 1)
                                 <th>Acciones</th>
+                                @endif
                             </tr>
                         </thead>
                     </table>
@@ -53,43 +49,9 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    /* Estilos personalizados para DataTables */
-    .dataTables_filter input {
-        width: 300px !important;
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-        margin-left: 10px;
-    }
-
-    .dataTables_filter label {
-        display: flex;
-        align-items: center;
-        font-weight: normal;
-    }
-
-    .dt-buttons .btn {
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-
-    .dataTables_length label {
-        display: flex;
-        align-items: center;
-    }
-
-    .dataTables_length select {
-        margin: 0 5px;
-        width: auto !important;
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
-document.addEventListener('dependenciesLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Verificar que jQuery esté disponible
     if (typeof $ === 'undefined') {
         console.error('jQuery no está disponible');
@@ -108,7 +70,7 @@ document.addEventListener('dependenciesLoaded', function() {
             { data: 'month_paid', name: 'month_paid' },
             { data: 'receipt_link', orderable: false, searchable: false },
             @if(auth()->user()->role_id == 1)
-            { data: 'actions', orderable: false, searchable: false },
+            { data: 'actions', orderable: false, searchable: false }
             @endif
         ],
         responsive: true,
@@ -133,17 +95,7 @@ document.addEventListener('dependenciesLoaded', function() {
                 "previous": "Anterior"
             }
         }
-    });
-});
-
-// Plan B: Si el evento no se dispara
-setTimeout(function() {
-    if (typeof $ !== 'undefined' && typeof $.fn.DataTable !== 'undefined') {
-        document.dispatchEvent(new Event('dependenciesLoaded'));
-    } else {
-        console.error('Las dependencias no se cargaron correctamente');
-        location.reload(); // Recargar como último recurso
-    }
-}, 1000);
+    }); // <-- Asegúrate de que este paréntesis de cierre esté presente
+}); // <-- Cierre del event listener
 </script>
 @endpush
