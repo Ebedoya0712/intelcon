@@ -10,7 +10,7 @@
         <!-- Panel de Usuario -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : asset('images/user.png') }}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : asset('images/user.png') }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
                 <a href="#" class="d-block">{{ Auth::user()->first_name }}</a>
@@ -67,7 +67,7 @@
                                 <a href="{{ route('payments.index') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Historial General</p></a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{-- route('payments.create') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Pago</p></a>
+                                <a href="{{ route('payments.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Pago</p></a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('payments.pending') }}" class="nav-link"><i class="far fa-circle nav-icon text-warning"></i><p>Pagos Pendientes</p></a>

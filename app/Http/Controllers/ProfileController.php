@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Arr; // Importa la clase Arr
+use Illuminate\Support\Arr;
+use App\Models\State;
+use App\Models\City;
+use App\Models\Municipality;
 
 class ProfileController extends Controller
 {
@@ -16,8 +18,17 @@ class ProfileController extends Controller
      */
     public function edit(Request $request)
     {
+        $user = $request->user();
+        
+        // Carga las ciudades y municipios basados en la selección actual del usuario
+        $cities = $user->state_id ? City::where('state_id', $user->state_id)->get() : collect();
+        $municipalities = $user->city_id ? Municipality::where('city_id', $user->city_id)->get() : collect();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'states' => State::all(),
+            'cities' => $cities,
+            'municipalities' => $municipalities,
         ]);
     }
 
@@ -34,27 +45,25 @@ class ProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'address' => ['nullable', 'string', 'max:255'],
             'profile_photo' => ['nullable', 'image', 'max:2048'],
+            'state_id' => ['required', 'exists:states,id'],
+            'city_id' => ['required', 'exists:cities,id'],
+            'municipality_id' => ['required', 'exists:municipalities,id'],
         ]);
 
-        // 1. Maneja la subida de la foto PRIMERO
         if ($request->hasFile('profile_photo')) {
-            // Borra la foto anterior si existe
             if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
                 Storage::disk('public')->delete($user->profile_photo);
             }
-            // Guarda la nueva foto y asigna la ruta correcta al modelo
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
             $user->profile_photo = $path;
         }
 
-        // 2. Rellena el modelo con los demás datos, EXCLUYENDO la foto para evitar sobrescribir la ruta
         $user->fill(Arr::except($validated, ['profile_photo']));
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
 
-        // 3. Guarda todos los cambios (incluyendo la nueva ruta de la foto)
         $user->save();
 
         return redirect()->route('profile.edit')->with('success_profile', '¡Tus datos se actualizaron correctamente!');

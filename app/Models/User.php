@@ -32,6 +32,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'state_id',
         'role_id',
         'remember_token',
+        'city_id',
+        'municipality_id',
     ];
 
     /**
@@ -62,6 +64,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function state()
