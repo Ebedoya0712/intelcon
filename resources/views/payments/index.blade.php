@@ -25,11 +25,21 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Todos los pagos registrados</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('payments.create') }}" class="btn btn-primary">
+                    <!-- INICIO: HERRAMIENTAS DEL CARD CON BÚSQUEDA PERSONALIZADA -->
+                    <div class="card-tools d-flex align-items-center">
+                        <div class="input-group input-group-sm" style="width: 350px;">
+                            <input type="text" id="custom-search-input" class="form-control float-right" placeholder="Buscar...">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <a href="{{ route('payments.create') }}" class="btn btn-primary ml-3">
                             <i class="fas fa-plus-circle mr-1"></i> Nuevo Pago
                         </a>
                     </div>
+                    <!-- FIN: HERRAMIENTAS DEL CARD -->
                 </div>
                 <div class="card-body">
                     <table id="payments-table" class="table table-bordered table-hover w-100">
@@ -55,67 +65,65 @@
 
 @push('styles')
 <style>
-    /* Estilos personalizados para DataTables */
-    .dataTables_filter input {
-        width: 300px !important;
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-        margin-left: 10px;
-    }
-
-    .dataTables_filter label {
+    /* Contenedor inferior (Botones y Paginación) */
+    .dataTables_wrapper .row:last-child {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        font-weight: normal;
+        margin-top: 1rem;
     }
 
+    /* Paginación centrada */
+    .dataTables_paginate {
+        display: flex;
+        justify-content: center;
+        flex-grow: 1; /* Permite que ocupe el espacio central */
+    }
+    
+    /* Botones a la izquierda */
+    .dt-buttons {
+        text-align: left;
+    }
     .dt-buttons .btn {
         margin-right: 5px;
-        margin-bottom: 5px;
-    }
-
-    .dataTables_length label {
-        display: flex;
-        align-items: center;
-    }
-
-    .dataTables_length select {
-        margin: 0 5px;
-        width: auto !important;
     }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-document.addEventListener('dependenciesLoaded', function() {
-    // Verificar que jQuery esté disponible
-    if (typeof $ === 'undefined') {
-        console.error('jQuery no está disponible');
-        return;
-    }
-
-    $('#pending-payments-table').DataTable({
+document.addEventListener('DOMContentLoaded', function() {
+    var table = $('#payments-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ route('payments.pending') }}",
+        ajax: "{{ route('payments.index') }}",
         columns: [
             { data: 'id', name: 'payments.id' },
             { data: 'user_name', name: 'user.first_name' },
             { data: 'formatted_amount', name: 'amount' },
             { data: 'payment_date', name: 'payment_date' },
             { data: 'month_paid', name: 'month_paid' },
+            { data: 'status_badge', name: 'status' },
             { data: 'receipt_link', orderable: false, searchable: false },
-            @if(auth()->user()->role_id == 1)
-            { data: 'actions', orderable: false, searchable: false },
-            @endif
+            { data: 'actions', orderable: false, searchable: false }
         ],
         responsive: true,
         autoWidth: false,
+        // --- INICIO DE LA MODIFICACIÓN ---
+        // Se elimina la barra de búsqueda por defecto ('f')
+        dom:  "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
+              "<'row'<'col-sm-12'tr>>" +
+              "<'row'<'col-sm-12 col-md-5'B><'col-sm-12 col-md-7'p>>",
+        buttons: [
+            { extend: 'copy', text: '<i class="fas fa-copy"></i> Copiar', className: 'btn btn-secondary' },
+            { extend: 'excel', text: '<i class="fas fa-file-excel"></i> Excel', className: 'btn btn-success' },
+            { extend: 'pdf', text: '<i class="fas fa-file-pdf"></i> PDF', className: 'btn btn-danger' },
+            { extend: 'print', text: '<i class="fas fa-print"></i> Imprimir', className: 'btn btn-info' }
+        ],
+        // --- FIN DE LA MODIFICACIÓN ---
         language: {
             "decimal": "",
-            "emptyTable": "No hay pagos pendientes",
+            "emptyTable": "No hay datos disponibles en la tabla",
             "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
             "infoEmpty": "Mostrando 0 a 0 de 0 registros",
             "infoFiltered": "(filtrado de _MAX_ registros totales)",
@@ -133,6 +141,11 @@ document.addEventListener('dependenciesLoaded', function() {
                 "previous": "Anterior"
             }
         }
+    });
+
+    // Vincula la barra de búsqueda personalizada con la tabla
+    $('#custom-search-input').on('keyup', function(){
+        table.search(this.value).draw();
     });
 });
 

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OverduePaymentNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException; 
 
 class PaymentController extends Controller
 {
@@ -90,35 +91,57 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         try {
-            $validatedData = $request->validate([
+            // 1. Define las reglas de validación base
+            $rules = [
                 'amount' => 'required|numeric|min:0',
                 'payment_date' => 'required|date',
                 'month_paid' => 'required|date_format:Y-m',
                 'receipt_path' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
                 'notes' => 'nullable|string',
-            ]);
+            ];
 
-            $path = $request->file('receipt_path')->store('receipts', 'public');
+            // 2. Si es admin, añade reglas adicionales
+            if (Auth::user()->role_id == 1) {
+                $rules['user_id'] = 'required|exists:users,id';
+                $rules['status'] = 'required|in:paid,pending,overdue';
+            }
+
+            // 3. Ejecuta la validación
+            $validatedData = $request->validate($rules);
             
-            Payment::create([
-                'user_id' => Auth::user()->role_id == 1 ? $validatedData['user_id'] : Auth::id(),
-                'status' => Auth::user()->role_id == 1 ? $validatedData['status'] : 'pending',
-                'receipt_path' => $path,
-                'amount' => $validatedData['amount'],
-                'payment_date' => $validatedData['payment_date'],
-                'month_paid' => $validatedData['month_paid'],
-                'notes' => $validatedData['notes'] ?? null
-            ]);
+            // 4. Prepara los datos para la creación
+            $dataToCreate = $validatedData;
+            $dataToCreate['receipt_path'] = $request->file('receipt_path')->store('receipts', 'public');
 
-            return response()->json([
-                'success' => true,
-                'message' => '¡Pago registrado exitosamente! Será verificado pronto.'
-            ]);
+            if (Auth::user()->role_id == 1) {
+                // Si es admin, usa los datos del formulario
+                $dataToCreate['user_id'] = $validatedData['user_id'];
+                $dataToCreate['status'] = $validatedData['status'];
+            } else {
+                // Si es cliente, asigna los datos automáticamente
+                $dataToCreate['user_id'] = Auth::id();
+                $dataToCreate['status'] = 'pending';
+            }
 
-        } catch (\Exception $e) {
+            // 5. Crea el pago
+            Payment::create($dataToCreate);
+
+            $message = Auth::user()->role_id == 1 ? '¡Pago registrado exitosamente!' : '¡Tu pago ha sido reportado! Será verificado pronto.';
+            
+            return response()->json(['success' => true, 'message' => $message]);
+
+        } catch (ValidationException $e) {
+            // Si la validación falla, devuelve los errores como JSON
             return response()->json([
                 'success' => false,
-                'message' => 'Error al registrar el pago: ' . $e->getMessage()
+                'message' => 'Por favor, corrige los errores.',
+                'errors' => $e->errors()
+            ], 422); // 422 es el código estándar para errores de validación
+        } catch (\Exception $e) {
+            // Captura cualquier otro error
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error inesperado: ' . $e->getMessage()
             ], 500);
         }
     }
