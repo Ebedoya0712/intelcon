@@ -80,6 +80,10 @@ Route::middleware('auth')->group(function () {
     // Gestión de Pagos (Admin)
     Route::get('payments/pending', [PaymentController::class, 'pending'])->name('payments.pending');
     Route::get('payments/overdue', [PaymentController::class, 'overdue'])->name('payments.overdue');
+    // Rutas para notificar pagos morosos
+    Route::post('payments/notify-all-overdue', [PaymentController::class, 'notifyAllOverdue'])->name('payments.notifyAllOverdue');
+    Route::post('payments/{payment}/notify', [PaymentController::class, 'notifyOverdue'])->name('payments.notify');
+    Route::get('payments/paid', [PaymentController::class, 'paid'])->name('payments.paid');
     Route::resource('payments', PaymentController::class)->except(['show']);
 
 });

@@ -2,33 +2,46 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 use App\Models\Payment;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
 
 class OverduePaymentNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $payment;
-    public $daysOverdue;
 
+    /**
+     * Create a new message instance.
+     */
     public function __construct(Payment $payment)
     {
         $this->payment = $payment;
-        $this->daysOverdue = \Carbon\Carbon::parse($payment->month_paid)
-            ->endOfMonth()
-            ->diffInDays(now());
     }
 
-    public function build()
+    /**
+     * Get the message envelope.
+     */
+    public function envelope(): Envelope
     {
-        return $this->subject('Recordatorio de Pago Atrasado')
-            ->markdown('emails.overdue-payment')
-            ->with([
-                'payment' => $this->payment,
-                'daysOverdue' => $this->daysOverdue
-            ]);
+        return new Envelope(
+            subject: 'Recordatorio de Pago Vencido - Intelcom',
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        // Usaremos una vista HTML personalizada
+        return new Content(
+            view: 'emails.overdue-payment',
+        );
     }
 }

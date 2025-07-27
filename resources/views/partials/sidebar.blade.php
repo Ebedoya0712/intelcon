@@ -51,7 +51,7 @@
                                 <a href="{{ route('users.index') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Ver Todos</p></a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{-- route('users.create') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Cliente</p></a>
+                                <a href="{{ route('users.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Cliente</p></a>
                             </li>
                         </ul>
                     </li>
@@ -69,6 +69,14 @@
                             <li class="nav-item">
                                 <a href="{{ route('payments.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Pago</p></a>
                             </li>
+                            <!-- INICIO: NUEVO ENLACE -->
+                            <li class="nav-item">
+                                <a href="{{ route('payments.paid') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon text-success"></i>
+                                    <p>Pagos Pagados</p>
+                                </a>
+                            </li>
+                            <!-- FIN: NUEVO ENLACE -->
                             <li class="nav-item">
                                 <a href="{{ route('payments.pending') }}" class="nav-link"><i class="far fa-circle nav-icon text-warning"></i><p>Pagos Pendientes</p></a>
                             </li>
@@ -78,7 +86,6 @@
                         </ul>
                     </li>
 
-                    <!-- INICIO: NUEVO MÓDULO DE SERVICIOS PARA ADMIN -->
                     <li class="nav-header">GESTIÓN DE SERVICIOS</li>
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -94,7 +101,6 @@
                             </li>
                         </ul>
                     </li>
-                    <!-- FIN: NUEVO MÓDULO -->
 
                     <li class="nav-header">CONFIGURACIÓN</li>
                     <li class="nav-item">
@@ -116,14 +122,12 @@
                 <!-- =================================================== -->
                     <li class="nav-header">MI CUENTA</li>
 
-                    <!-- INICIO: NUEVO MÓDULO DE SERVICIOS PARA CLIENTE -->
                     <li class="nav-item">
-                        <a href="{{-- route('my-services.index') --}}" class="nav-link">
+                        <a href="{{-- route('my-service.show') --}}" class="nav-link">
                             <i class="nav-icon fas fa-wifi text-success"></i>
-                            <p>Mis Servicios Activos</p>
+                            <p>Mi Servicio</p>
                         </a>
                     </li>
-                    <!-- FIN: NUEVO MÓDULO -->
 
                     <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
@@ -135,7 +139,7 @@
                                 <a href="{{-- route('my-payments.index') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Ver mi Historial</p></a>
                             </li>
                              <li class="nav-item">
-                                <a href="{{-- route('my-payments.create') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Reportar un Pago</p></a>
+                                <a href="{{ route('my-payments.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Reportar un Pago</p></a>
                             </li>
                         </ul>
                     </li>
@@ -151,7 +155,7 @@
                 <li class="nav-header"></li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
+                    onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
                         <i class="nav-icon fas fa-sign-out-alt text-danger"></i>
                         <p class="text">Cerrar Sesión</p>
                     </a>

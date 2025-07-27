@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             { data: 'formatted_amount', name: 'amount' },
             { data: 'payment_date', name: 'payment_date' },
             { data: 'month_paid', name: 'month_paid' },
-            { data: 'days_overdue', name: 'days_overdue' }, // Asumiendo que el backend lo calcula
+            { data: 'days_overdue', name: 'days_overdue' },
             { data: 'actions', orderable: false, searchable: false }
         ],
         responsive: true,
@@ -110,69 +110,71 @@ document.addEventListener('DOMContentLoaded', function() {
             { extend: 'pdf', text: '<i class="fas fa-file-pdf"></i> PDF', className: 'btn btn-danger' },
             { extend: 'print', text: '<i class="fas fa-print"></i> Imprimir', className: 'btn btn-info' }
         ],
-        language: {
-            "emptyTable": "No hay pagos morosos en este momento.",
-            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)",
-            "lengthMenu": "Mostrar _MENU_ registros",
-            "loadingRecords": "Cargando...",
-            "processing": "Procesando...",
-            "search": "Buscar:",
-            "zeroRecords": "No se encontraron registros coincidentes",
-            "paginate": {
-                "first": "Primero",
-                "last": "Último",
-                "next": "Siguiente",
-                "previous": "Anterior"
-            }
-        },
-        createdRow: function(row, data, dataIndex) {
-            // Resaltar filas con más de 30 días de mora
-            if (parseInt(data.days_overdue) > 30) {
-                $(row).addClass('bg-danger');
-            }
-        }
+        language: { "emptyTable": "No hay pagos morosos en este momento.", "info": "Mostrando _START_ a _END_ de _TOTAL_ registros", "infoEmpty": "Mostrando 0 a 0 de 0 registros", "infoFiltered": "(filtrado de _MAX_ registros totales)", "lengthMenu": "Mostrar _MENU_ registros", "loadingRecords": "Cargando...", "processing": "Procesando...", "search": "Buscar:", "zeroRecords": "No se encontraron registros coincidentes", "paginate": { "first": "Primero", "last": "Último", "next": "Siguiente", "previous": "Anterior" } }
     });
 
-    // Manejo de notificación individual
-    $(document).on('click', '.notify-btn', function() {
-        const paymentId = $(this).data('id');
-        // Aquí iría tu lógica para notificar
-    });
-
-    // Vincula la barra de búsqueda personalizada con la tabla
     $('#custom-search-input').on('keyup', function(){
         table.search(this.value).draw();
     });
 
-    // Manejo de notificación masiva
-    $('#notify-all').click(function() {
-        // Lógica para notificar a todos los morosos
+    // --- INICIO: LÓGICA DE NOTIFICACIÓN ---
+
+    // Notificación Individual
+    $('#overdue-payments-table').on('click', '.notify-btn', function() {
+        const paymentId = $(this).data('id');
+        Swal.fire({
+            title: '¿Confirmar notificación?',
+            text: "Se enviará un recordatorio de pago a este usuario.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, notificar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/payments/${paymentId}/notify`, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('¡Enviado!', data.message, 'success');
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                });
+            }
+        });
     });
+
+    // Notificación Masiva
+    $('#notify-all').on('click', function() {
+        Swal.fire({
+            title: '¿Notificar a todos?',
+            text: "Se enviará un recordatorio a todos los usuarios con pagos vencidos. Esta acción puede tardar.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, notificar a todos',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Enviando...', html: 'Por favor, espera.', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
+                fetch("{{ route('payments.notifyAllOverdue') }}", {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.fire('¡Proceso completado!', data.message, 'success');
+                });
+            }
+        });
+    });
+    // --- FIN: LÓGICA DE NOTIFICACIÓN ---
 });
 </script>
-@endpush
-
-@push('styles')
-<style>
-    /* Estilos personalizados */
-    .bg-danger {
-        background-color: #ffcccc !important;
-    }
-    #overdue-payments-table tbody tr:hover {
-        background-color: #fff3cd !important;
-    }
-    .dataTables_filter input {
-        margin-left: 10px !important;
-        display: inline-block !important;
-        width: auto !important;
-    }
-    .dt-buttons {
-        margin-bottom: 15px;
-    }
-    .dt-buttons .btn {
-        margin-right: 5px;
-    }
-</style>
 @endpush

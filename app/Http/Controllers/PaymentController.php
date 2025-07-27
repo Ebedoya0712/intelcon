@@ -20,57 +20,88 @@ class PaymentController extends Controller
      * Muestra una lista de todos los pagos (vista de admin).
      */
     public function index(Request $request)
-{
-    if ($request->ajax()) {
-        // Base query
-        $payments = Payment::with('user')->select('payments.*');
-        
-        // Si no es admin (rol_id != 1), filtrar solo los pagos del usuario autenticado
-        if (auth()->user()->role_id != 1) {
-            $payments->where('user_id', auth()->id());
-        }
-        
-        return DataTables::of($payments)
-            ->addColumn('user_name', function($payment) {
-                return $payment->user->first_name . ' ' . $payment->user->last_name;
-            })
-            ->addColumn('formatted_amount', function($payment) {
-                return '$' . number_format($payment->amount, 2);
-            })
-            ->addColumn('status_badge', function($payment) {
-                $status = $payment->status;
-                $class = $status === 'approved' ? 'badge-success' : 
-                        ($status === 'pending' ? 'badge-warning' : 'badge-danger');
-                return '<span class="badge '.$class.'">'.ucfirst($status).'</span>';
-            })
-            ->addColumn('receipt_link', function($payment) {
-                return $payment->receipt_path 
-                    ? '<a href="'.asset('storage/'.$payment->receipt_path).'" target="_blank">Ver comprobante</a>'
-                    : 'Sin comprobante';
-            })
-            ->addColumn('actions', function($payment) {
-                $editButton = '';
-                $deleteButton = '';
-                
-                // Solo mostrar botones de editar/eliminar si es admin o el pago es del usuario
-                if (auth()->user()->role_id == 1 || $payment->user_id == auth()->id()) {
-                    $editButton = '<a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>';
+    {
+        if ($request->ajax()) {
+            $payments = Payment::with('user')->select('payments.*');
+            
+            if (auth()->user()->role_id != 1) {
+                $payments->where('user_id', auth()->id());
+            }
+            
+            return DataTables::of($payments)
+                ->addColumn('user_name', function($payment) {
+                    return $payment->user->first_name . ' ' . $payment->user->last_name;
+                })
+                ->addColumn('formatted_amount', function($payment) {
+                    return '$' . number_format($payment->amount, 2);
+                })
+                ->addColumn('status_badge', function($payment) {
+                    /** @var \App\Models\Payment $payment */
+                    $status = $payment->status;
                     
-                    $deleteButton = '<button class="btn btn-sm btn-danger delete-btn" data-id="'.$payment->id.'">
-                                    <i class="fas fa-trash"></i>
-                                    </button>';
-                }
-                
-                return '<div class="btn-group">'.$editButton.$deleteButton.'</div>';
-            })
-            ->rawColumns(['status_badge', 'receipt_link', 'actions'])
-            ->make(true);
+                    // Lógica para asignar clases y texto según el estado
+                    switch ($status) {
+                        case 'paid':
+                        case 'approved': // 'approved' también se considera pagado
+                            return '<span class="btn btn-xs btn-success" style="color: white; pointer-events: none;">Pagado</span>';
+                        case 'pending':
+                            return '<span class="badge badge-warning">Pendiente</span>';
+                        case 'overdue':
+                            return '<span class="badge badge-danger">Vencido</span>';
+                        case 'rejected':
+                            return '<span class="badge badge-dark">Rechazado</span>';
+                        default:
+                            return '<span class="badge badge-secondary">'.ucfirst($status).'</span>';
+                    }
+                })
+                ->addColumn('receipt_link', function($payment) {
+                    return $payment->receipt_path 
+                        ? '<a href="'.asset('storage/'.$payment->receipt_path).'" target="_blank">Ver comprobante</a>'
+                        : 'Sin comprobante';
+                })
+                ->addColumn('actions', function($payment) {
+                    if (auth()->user()->role_id == 1) {
+                        $editButton = '<a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-primary" title="Editar"><i class="fas fa-edit"></i></a>';
+                        $deleteButton = '<button class="btn btn-sm btn-danger delete-btn" data-id="'.$payment->id.'" title="Eliminar"><i class="fas fa-trash"></i></button>';
+                        return '<div class="btn-group">'.$editButton.$deleteButton.'</div>';
+                    }
+                    return '';
+                })
+                ->rawColumns(['status_badge', 'receipt_link', 'actions'])
+                ->make(true);
+        }
+
+        return view('payments.index');
     }
 
-    return view('payments.index');
-}
+    public function paid(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = Payment::with('user')->whereIn('status', ['paid', 'approved']);
+
+            if (auth()->user()->role_id != 1) {
+                $query->where('user_id', auth()->id());
+            }
+            
+            return DataTables::of($query)
+                ->addColumn('user_name', fn($payment) => $payment->user->first_name . ' ' . $payment->user->last_name)
+                ->addColumn('formatted_amount', fn($payment) => '$' . number_format($payment->amount, 2))
+                ->addColumn('status_badge', function($payment) {
+                    return '<span class="badge badge-success">Pagado</span>';
+                })
+                ->addColumn('receipt_link', fn($payment) => $payment->receipt_path ? '<a href="'.asset('storage/'.$payment->receipt_path).'" target="_blank">Ver comprobante</a>' : 'Sin comprobante')
+                ->addColumn('actions', function($payment) {
+                    if (auth()->user()->role_id == 1) {
+                        return '<a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-primary" title="Ver/Editar"><i class="fas fa-edit"></i></a>';
+                    }
+                    return '';
+                })
+                ->rawColumns(['status_badge', 'receipt_link', 'actions'])
+                ->make(true);
+        }
+
+        return view('payments.paid');
+    }
 
     /**
      * Muestra el formulario correcto para registrar un pago, dependiendo del rol del usuario.
@@ -151,47 +182,33 @@ class PaymentController extends Controller
      */
     public function edit(Payment $payment)
     {
-        $users = User::orderBy('first_name')->get();
-        return view('payments.edit', compact('payment', 'users'));
+        if (Auth::user()->role_id != 1) {
+            abort(403, 'Acción no autorizada.');
+        }
+        
+        return view('payments.edit', compact('payment'));
     }
 
     /**
-     * Actualiza un pago en la base de datos.
+     * Actualiza un pago existente en la base de datos. (Función de Administrador)
      */
     public function update(Request $request, Payment $payment)
     {
-        try {
-            $validatedData = $request->validate([
-                'amount' => 'required|numeric|min:0',
-                'payment_date' => 'required|date',
-                'month_paid' => 'required|date_format:Y-m',
-                'status' => 'required|in:paid,pending,overdue',
-                'receipt_path' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-                'notes' => 'nullable|string',
-            ]);
-
-            if ($request->hasFile('receipt_path')) {
-                // Eliminar el archivo antiguo si existe
-                if ($payment->receipt_path) {
-                    Storage::disk('public')->delete($payment->receipt_path);
-                }
-                $path = $request->file('receipt_path')->store('receipts', 'public');
-                $validatedData['receipt_path'] = $path;
-            }
-
-            $payment->update($validatedData);
-
-            return response()->json([
-                'success' => true,
-                'message' => '¡Pago actualizado exitosamente!'
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar el pago: ' . $e->getMessage()
-            ], 500);
+        if (Auth::user()->role_id != 1) {
+            abort(403, 'Acción no autorizada.');
         }
+
+        // --- INICIO DE LA MODIFICACIÓN ---
+        // Ahora solo validamos los campos que el admin puede editar
+        $validatedData = $request->validate([
+            'status' => 'required|in:paid,pending,overdue,rejected',
+            'notes' => 'nullable|string',
+        ]);
+        // --- FIN DE LA MODIFICACIÓN ---
+
+        $payment->update($validatedData);
+
+        return redirect()->route('payments.pending')->with('success', '¡Pago actualizado exitosamente!');
     }
 
     /**
@@ -327,65 +344,49 @@ public function overdue(Request $request)
     }
 
 
-public function notifyAllOverdue(Request $request)
-{
-    // Validar que el usuario sea administrador
-    if (auth()->user()->role_id != 1) {
-        return response()->json([
-            'success' => false,
-            'message' => 'No tienes permisos para realizar esta acción'
-        ], 403);
-    }
-
-    // Obtener el mes actual y el anterior
-    $currentMonth = Carbon::now()->format('Y-m');
-    $previousMonth = Carbon::now()->subMonth()->format('Y-m');
-
-    // Obtener los pagos morosos con sus usuarios (solo los verificados)
-    $overduePayments = Payment::with(['user' => function($query) {
-            $query->whereNotNull('email_verified_at');
-        }])
-        ->where('status', 'overdue')
-        ->whereIn('month_paid', [$currentMonth, $previousMonth])
-        ->get(); // ¡Importante! get() para obtener la colección
-
-    $notified = 0;
-    $failed = 0;
-
-    foreach ($overduePayments as $payment) {
+ public function notifyOverdue(Payment $payment)
+    {
         try {
-            // Verificar que el usuario y su email existan
-            if (!$payment->user || !filter_var($payment->user->email, FILTER_VALIDATE_EMAIL)) {
-                Log::warning("Usuario sin email válido - Pago ID: {$payment->id}");
-                $failed++;
-                continue;
+            if (!$payment->user || !$payment->user->email) {
+                throw new \Exception('El usuario asociado a este pago no tiene un correo electrónico válido.');
             }
 
-            // Enviar notificación (versión síncrona)
-            Mail::to($payment->user->email)
-                ->send(new OverduePaymentNotification($payment));
-
-            // Actualizar registro del pago
-            $payment->update([
-                'last_notified_at' => now(),
-                'notification_count' => $payment->notification_count + 1
-            ]);
-
-            $notified++;
+            Mail::to($payment->user->email)->send(new OverduePaymentNotification($payment));
+            
+            return response()->json(['success' => true, 'message' => 'Notificación enviada exitosamente a ' . $payment->user->first_name]);
 
         } catch (\Exception $e) {
-            Log::error("Error notificando pago ID {$payment->id}: " . $e->getMessage());
-            $failed++;
+            Log::error("Error al notificar pago ID {$payment->id}: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error al enviar la notificación.'], 500);
         }
     }
 
-    return response()->json([
-        'success' => true,
-        'message' => "Notificaciones enviadas: {$notified} exitosas, {$failed} fallidas",
-        'data' => [
-            'notified' => $notified,
-            'failed' => $failed
-        ]
-    ]);
+    /**
+     * Notifica a todos los usuarios con pagos vencidos.
+     */
+    public function notifyAllOverdue(Request $request)
+    {
+        $overduePayments = Payment::with('user')->where('status', 'overdue')->get();
+        $notified = 0;
+        $failed = 0;
+
+        foreach ($overduePayments as $payment) {
+            try {
+                if ($payment->user && $payment->user->email) {
+                    Mail::to($payment->user->email)->send(new OverduePaymentNotification($payment));
+                    $notified++;
+                } else {
+                    $failed++;
+                }
+            } catch (\Exception $e) {
+                Log::error("Error en notificación masiva para pago ID {$payment->id}: " . $e->getMessage());
+                $failed++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Proceso completado. Notificaciones enviadas: {$notified}. Fallidas: {$failed}.",
+        ]);
     }
 }
