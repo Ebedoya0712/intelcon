@@ -103,8 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchable: false,
                 render: function(data, type, row) {
                     if(row.id != {{ auth()->id() }}) {
-                        var url = "{{ route('users.edit', ':id') }}".replace(':id', row.id);
-                        return `<a href="${url}" class="btn btn-sm btn-primary" title="Editar rol">
+                        return `<a href="{{ route('roles.edit-user-role', '') }}/${row.id}" class="btn btn-sm btn-primary" title="Editar rol">
                                     <i class="fas fa-user-edit"></i>
                                 </a>`;
                     }
