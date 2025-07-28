@@ -155,4 +155,20 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'Cliente actualizado exitosamente.');
     }
+    public function destroy(User $user)
+    {
+        try {
+            // Elimina la foto de perfil si existe
+            if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $user->delete();
+
+            return response()->json(['success' => true, 'message' => 'Cliente eliminado exitosamente.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al eliminar el cliente.'], 500);
+        }
+    }
 }

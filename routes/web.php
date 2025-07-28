@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ServiceAssignmentController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SolicitudController; // Corregido para apuntar a la carpeta Auth
+use App\Http\Controllers\ZoneController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -93,5 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('services', ServiceController::class);
 
     Route::resource('service-assignments', ServiceAssignmentController::class);
+
+    Route::resource('zones', ZoneController::class);
 
 });

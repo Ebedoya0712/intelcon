@@ -80,14 +80,14 @@ document.addEventListener('DOMContentLoaded', function() {
             { data: 'identification', name: 'identification' },
             { data: 'email', name: 'email' },
             { data: 'role_name', name: 'role.name' },
-            { data: 'status_badge', name: 'service' },
+            { data: 'status_badge', name: 'service_id' }, // Actualizado para buscar por service_id
             { data: 'actions', orderable: false, searchable: false }
         ],
         responsive: true,
         autoWidth: false,
-        dom:    "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-12 col-md-5'B><'col-sm-12 col-md-7'p>>",
+        dom:  "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
+              "<'row'<'col-sm-12'tr>>" +
+              "<'row'<'col-sm-12 col-md-5'B><'col-sm-12 col-md-7'p>>",
         buttons: [
             { extend: 'copy', text: '<i class="fas fa-copy"></i> Copiar', className: 'btn btn-secondary' },
             { extend: 'excel', text: '<i class="fas fa-file-excel"></i> Excel', className: 'btn btn-success' },
@@ -100,6 +100,45 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#custom-search-input').on('keyup', function(){
         table.search(this.value).draw();
     });
+
+    // --- INICIO: LÓGICA PARA EL BOTÓN DE ELIMINAR ---
+    $('#users-table').on('click', '.delete-btn', function() {
+        const userId = $(this).data('id');
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, ¡eliminar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('¡Eliminado!', data.message, 'success');
+                        table.ajax.reload(); // Recarga la tabla
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Ocurrió un problema de conexión.', 'error');
+                });
+            }
+        });
+    });
+    // --- FIN: LÓGICA PARA EL BOTÓN DE ELIMINAR ---
 });
 </script>
 @endpush

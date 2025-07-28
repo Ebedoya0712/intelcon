@@ -120,7 +120,7 @@
 
                     <li class="nav-header">CONFIGURACIÓN</li>
                     <li class="nav-item">
-                        <a href="{{-- route('zones.index') --}}" class="nav-link">
+                        <a href="{{ route('zones.index') }}" class="nav-link">
                             <i class="nav-icon fas fa-map-marked-alt"></i>
                             <p>Zonas Geográficas</p>
                         </a>
