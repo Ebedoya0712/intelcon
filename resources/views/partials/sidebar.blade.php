@@ -88,19 +88,35 @@
 
                     <li class="nav-header">GESTIÓN DE SERVICIOS</li>
                     <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-wifi"></i>
-                            <p>Servicios <i class="right fas fa-angle-left"></i></p>
-                        </a>
-                        <ul class="nav nav-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-wifi"></i>
+                        <p>Servicios <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            {{-- Ruta para el listado de servicios --}}
+                            <a href="{{ route('services.index') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Historial de Servicios</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            {{-- Ruta para el formulario de creación --}}
+                            <a href="{{ route('services.create') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Registrar Servicio</p>
+                            </a>
+                        </li>
+                        <!-- INICIO: NUEVO ENLACE -->
                             <li class="nav-item">
-                                <a href="{{-- route('services.index') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Historial de Servicios</p></a>
+                                <a href="{{ route('service-assignments.index') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon text-info"></i>
+                                    <p>Servicios Asignados</p>
+                                </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="{{-- route('services.create') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Servicio</p></a>
-                            </li>
-                        </ul>
-                    </li>
+                            <!-- FIN: NUEVO ENLACE -->
+                    </ul>
+                </li>
 
                     <li class="nav-header">CONFIGURACIÓN</li>
                     <li class="nav-item">
@@ -112,7 +128,7 @@
                     <li class="nav-item">
                         <a href="{{-- route('roles.index') --}}" class="nav-link">
                             <i class="nav-icon fas fa-user-shield"></i>
-                            <p>Roles y Permisos</p>
+                            <p>Roles</p>
                         </a>
                     </li>
 

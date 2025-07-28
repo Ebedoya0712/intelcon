@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ServiceAssignmentController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SolicitudController; // Corregido para apuntar a la carpeta Auth
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -85,5 +87,11 @@ Route::middleware('auth')->group(function () {
     Route::post('payments/{payment}/notify', [PaymentController::class, 'notifyOverdue'])->name('payments.notify');
     Route::get('payments/paid', [PaymentController::class, 'paid'])->name('payments.paid');
     Route::resource('payments', PaymentController::class)->except(['show']);
+
+    // Gestión de Servicios (Admin)
+    
+    Route::resource('services', ServiceController::class);
+
+    Route::resource('service-assignments', ServiceAssignmentController::class);
 
 });

@@ -75,4 +75,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo(State::class);
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_user')
+                    ->withPivot('start_date', 'end_date', 'status')
+                    ->withTimestamps();
+    }
 }
