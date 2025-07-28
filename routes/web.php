@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ServiceAssignmentController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SolicitudController; // Corregido para apuntar a la carpeta Auth
@@ -96,5 +97,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('service-assignments', ServiceAssignmentController::class);
 
     Route::resource('zones', ZoneController::class);
+
+    Route::resource('roles', RoleController::class);
+    // Agrega esta ruta
+    Route::post('/roles/{role}/update-users', [RoleController::class, 'updateUsers'])->name('roles.update-users');
+
+    Route::get('roles/{user}/edit-role', [RoleController::class, 'editUserRole'])
+         ->name('roles.edit'); // Usamos el mismo nombre que la vista
+        
+    Route::put('roles/{user}/update-role', [RoleController::class, 'updateUserRole'])
+        ->name('roles.update');
+
+    Route::get('/roles/edit-user-role/{user}', [RoleController::class, 'editUserRole'])->name('roles.edit-user-role');
+    Route::put('/roles/update-user-role/{user}', [RoleController::class, 'updateUserRole'])->name('roles.update-user-role');
 
 });

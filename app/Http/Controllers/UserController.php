@@ -104,12 +104,15 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $roles = Role::where('id', '!=', 1)->get();
+        // Obtiene los roles para el selector (excluyendo el rol de Admin si no quieres que se asigne)
+        $roles = Role::all(); 
         $states = State::all();
+        
         // Carga las ciudades y municipios basados en la selección actual del usuario
         $cities = $user->state_id ? City::where('state_id', $user->state_id)->get() : collect();
         $municipalities = $user->city_id ? Municipality::where('city_id', $user->city_id)->get() : collect();
 
+        // Pasa todas las variables a la vista
         return view('users.edit', compact('user', 'roles', 'states', 'cities', 'municipalities'));
     }
 
@@ -121,29 +124,24 @@ class UserController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            // La validación 'unique' debe ignorar al usuario actual
             'identification' => ['required', 'string', 'max:20', ValidationRule::unique('users')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:255', ValidationRule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'], // La contraseña es opcional
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'address' => ['nullable', 'string', 'max:255'],
             'profile_photo' => ['nullable', 'image', 'max:2048'],
-            'role_id' => ['required', 'exists:roles,id'],
+            'role_id' => ['required', 'exists:roles,id'], // Valida que el rol exista
             'state_id' => ['required', 'exists:states,id'],
             'city_id' => ['required', 'exists:cities,id'],
             'municipality_id' => ['required', 'exists:municipalities,id'],
         ]);
 
-        // Actualiza la contraseña solo si se proporcionó una nueva
         if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
-            // Excluye la contraseña del array si está vacía
             $validated = Arr::except($validated, ['password']);
         }
 
-        // Maneja la subida de la foto de perfil si existe
         if ($request->hasFile('profile_photo')) {
-            // Borra la foto anterior si no es la de por defecto
             if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
                 Storage::disk('public')->delete($user->profile_photo);
             }
@@ -155,6 +153,7 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'Cliente actualizado exitosamente.');
     }
+
     public function destroy(User $user)
     {
         try {
