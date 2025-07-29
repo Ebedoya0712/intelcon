@@ -10,10 +10,19 @@
 
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-user"></i> Perfil</a>
+            <a class="nav-link" href="{{ route('profile.edit') }}"><i class="fas fa-user"></i> Mi Perfil</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> Salir</a>
+            <!-- Este enlace ahora envía un formulario POST -->
+            <a class="nav-link" href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+
+            <!-- Formulario oculto para el cierre de sesión -->
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </li>
     </ul>
 </nav>

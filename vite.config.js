@@ -6,9 +6,34 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/js/app.js',
+                'resources/js/app.js'
             ],
             refresh: true,
         }),
     ],
+    resolve: {
+        alias: {
+            '$': 'jquery',
+            'jQuery': 'jquery',
+        },
+    },
+    optimizeDeps: {
+        include: [
+            'jquery',
+            'bootstrap',
+            'datatables.net',
+            'datatables.net-bs4',
+            'sweetalert2',
+            'admin-lte'
+        ],
+        exclude: [
+            'pdfmake',
+            'datatables.net-buttons'
+        ]
+    },
+    build: {
+        rollupOptions: {
+            external: ['pdfmake/build/vfs_fonts']
+        }
+    }
 });
