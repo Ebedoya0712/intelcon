@@ -113,7 +113,7 @@ class PaymentController extends Controller
             return view('payments.create', compact('users'));
         }
 
-        return view('payments.client.create');
+        return view('payments.create');
     }
 
     /**
@@ -284,6 +284,7 @@ class PaymentController extends Controller
     return view('payments.pending');
 }
 
+/*
 public function overdue(Request $request)
 {
     if ($request->ajax()) {
@@ -342,7 +343,43 @@ public function overdue(Request $request)
 
     return view('payments.overdue');
     }
+*/
 
+public function overdue(Request $request)
+    {
+        if ($request->ajax()) {
+            // La consulta ahora es más simple: solo busca los pagos con estado 'overdue'.
+            $payments = Payment::with('user')->where('status', 'overdue');
+            
+            return DataTables::of($payments)
+                ->addColumn('user_name', fn($payment) => $payment->user->first_name . ' ' . $payment->user->last_name)
+                ->addColumn('formatted_amount', fn($payment) => '$' . number_format($payment->amount, 2))
+                ->addColumn('days_overdue', function($payment) {
+                    $dueDate = Carbon::parse($payment->month_paid)->endOfMonth();
+                    return $dueDate->diffInDays(now()) . ' días';
+                })
+                ->addColumn('actions', function($payment) {
+                    $buttons = '';
+                    if (auth()->user()->role_id == 1) {
+                        $buttons = '
+                            <div class="btn-group">
+                                <a href="'.route('payments.edit', $payment->id).'" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-exclamation-circle"></i> Regularizar
+                                </a>
+                                <button class="btn btn-sm btn-danger notify-btn" data-id="'.$payment->id.'">
+                                    <i class="fas fa-bell"></i> Notificar
+                                </button>
+                            </div>
+                        ';
+                    }
+                    return $buttons;
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('payments.overdue');
+    }
 
  public function notifyOverdue(Payment $payment)
     {

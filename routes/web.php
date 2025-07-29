@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\MyServiceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RoleController;
@@ -93,6 +94,8 @@ Route::middleware('auth')->group(function () {
     // Gestión de Servicios (Admin)
     
     Route::resource('services', ServiceController::class);
+
+    Route::get('my-service', [MyServiceController::class, 'show'])->name('my-service.show');
 
     Route::resource('service-assignments', ServiceAssignmentController::class);
 

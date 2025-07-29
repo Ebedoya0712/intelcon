@@ -139,7 +139,7 @@
                     <li class="nav-header">MI CUENTA</li>
 
                     <li class="nav-item">
-                        <a href="{{-- route('my-service.show') --}}" class="nav-link">
+                        <a href="{{ route('my-service.show') }}" class="nav-link">
                             <i class="nav-icon fas fa-wifi text-success"></i>
                             <p>Mi Servicio</p>
                         </a>
@@ -152,10 +152,10 @@
                         </a>
                          <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="{{-- route('my-payments.index') --}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Ver mi Historial</p></a>
+                                <a href="{{ route('payments.index')}}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Ver mi Historial</p></a>
                             </li>
                              <li class="nav-item">
-                                <a href="{{ route('my-payments.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Reportar un Pago</p></a>
+                                <a href="{{ route('payments.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Reportar un Pago</p></a>
                             </li>
                         </ul>
                     </li>
