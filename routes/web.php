@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDocumentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MyServiceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
@@ -113,5 +115,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/roles/edit-user-role/{user}', [RoleController::class, 'editUserRole'])->name('roles.edit-user-role');
     Route::put('/roles/update-user-role/{user}', [RoleController::class, 'updateUserRole'])->name('roles.update-user-role');
+
+    Route::get('admin/documents', [AdminDocumentController::class, 'index'])->name('admin.documents.index');
+
+    Route::resource('documents', DocumentController::class)->only(['index', 'store', 'destroy']);
 
 });
