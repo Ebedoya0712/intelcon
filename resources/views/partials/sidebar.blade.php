@@ -54,6 +54,9 @@
                                 <a href="{{ route('users.create') }}" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Registrar Cliente</p></a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('users.pre-register.form') }}" class="nav-link"><i class="far fa-circle nav-icon text-info"></i><p>Pre-Registrar Cédula</p></a>
+                            </li>
+                            <li class="nav-item">
                             <a href="{{ route('admin.documents.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-folder-open"></i>
                                 <p>Documentos de Clientes</p>
