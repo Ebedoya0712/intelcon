@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegistrationCompletionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MyServiceController;
 use App\Http\Controllers\ProfileController;
@@ -37,6 +38,10 @@ Route::get('/login', function () {
 Route::post('/acceder', [AuthController::class, 'login'])->name('auth.attempt');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
+Route::get('register/complete', [RegistrationCompletionController::class, 'showCompletionForm'])->name('register.show_completion_form');
+Route::post('register/complete', [RegistrationCompletionController::class, 'complete'])->name('register.complete');
+
 // Rutas de Recuperación de Contraseña
 Route::get('forgot-password', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -46,6 +51,11 @@ Route::post('reset-password', [AuthController::class, 'reset'])->name('password.
 // Rutas de Solicitud de Acceso para usuarios no registrados
 Route::get('/solicitud-acceso', [SolicitudController::class, 'create'])->name('solicitud.acceso');
 Route::post('/enviar-solicitud', [SolicitudController::class, 'send'])->name('solicitud.send');
+
+
+Route::get('users/pre-register', [UserController::class, 'showPreRegisterForm'])->name('users.pre-register.form');
+Route::post('users/pre-register', [UserController::class, 'preRegisterStore'])->name('users.pre-register.store');
+
 
 
 /*
@@ -120,4 +130,5 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('documents', DocumentController::class)->only(['index', 'store', 'destroy']);
 
+    
 });

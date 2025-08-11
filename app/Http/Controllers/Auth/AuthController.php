@@ -54,13 +54,25 @@ class AuthController extends Controller
 
         $user = User::where('identification', $request->identification)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            if (!$user) {
-                return back()->with('error_user_not_found', 'El número de identificación no se encuentra en nuestros registros.');
-            }
-            return back()->withErrors(['identification' => 'La contraseña es incorrecta.'])->withInput($request->only('identification'));
+        // Escenario 1: El usuario NO existe en absoluto
+        if (!$user) {
+            return back()->with('error_user_not_found', 'El número de identificación no se encuentra en nuestros registros.');
         }
 
+        // Escenario 2: El usuario existe PERO no ha completado su registro (no tiene contraseña)
+        if (is_null($user->password)) {
+            // Redirigimos al formulario para completar el registro
+            return redirect()->route('register.show_completion_form')
+                            ->with('identification', $user->identification);
+        }
+
+        // Escenario 3: El usuario existe y tiene contraseña, pero es incorrecta
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['identification' => 'La contraseña es incorrecta.'])
+                        ->withInput($request->only('identification'));
+        }
+
+        // Escenario 4: ÉXITO
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
         return redirect()->intended('dashboard');

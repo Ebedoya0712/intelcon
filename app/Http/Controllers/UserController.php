@@ -102,6 +102,27 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Cliente registrado exitosamente.');
     }
 
+    public function showPreRegisterForm()
+    {
+        // Simplemente retorna la vista que contiene el formulario
+        return view('users.pre-register');
+    }
+
+    public function preRegisterStore(Request $request)
+    {
+        $validated = $request->validate([
+            'identification' => ['required', 'string', 'max:20', 'unique:users,identification'],
+        ]);
+
+        User::create([
+            'identification' => $validated['identification'],
+            'role_id' => 2, // Rol de Cliente por defecto
+            'state_id' => 1, // Estado por defecto, se puede cambiar luego
+        ]);
+
+        return redirect()->route('users.pre-register.form')->with('success', 'Cliente pre-registrado exitosamente. Ahora puede completar su registro al intentar iniciar sesión.');
+    }
+
     public function edit(User $user)
     {
         // Obtiene los roles para el selector (excluyendo el rol de Admin si no quieres que se asigne)

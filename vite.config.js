@@ -17,6 +17,9 @@ export default defineConfig({
             'jQuery': 'jquery',
         },
     },
+    server: {
+        host: '127.0.0.1',
+    },
     optimizeDeps: {
         include: [
             'jquery',
