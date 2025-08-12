@@ -117,11 +117,12 @@ Route::middleware('auth')->group(function () {
     // Agrega esta ruta
     Route::post('/roles/{role}/update-users', [RoleController::class, 'updateUsers'])->name('roles.update-users');
 
-    Route::get('roles/{user}/edit-role', [RoleController::class, 'editUserRole'])
-         ->name('roles.edit'); // Usamos el mismo nombre que la vista
+    // CÁMBIALO A ESTO:
+        Route::get('roles/{user}/edit-role', [RoleController::class, 'editUserRole'])
+       ->name('roles.user.edit'); // <-- Nombre corregido y único
         
     Route::put('roles/{user}/update-role', [RoleController::class, 'updateUserRole'])
-        ->name('roles.update');
+        ->name('roles.user.update');
 
     Route::get('/roles/edit-user-role/{user}', [RoleController::class, 'editUserRole'])->name('roles.edit-user-role');
     Route::put('/roles/update-user-role/{user}', [RoleController::class, 'updateUserRole'])->name('roles.update-user-role');
