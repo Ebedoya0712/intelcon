@@ -48,7 +48,11 @@
                             <div class="form-group mb-3">
                                 <label for="email" class="fw-bold">Correo Electrónico</label>
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required>
-                                @error('email') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
 
                             <div class="row">
