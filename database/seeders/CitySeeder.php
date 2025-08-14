@@ -1,57 +1,312 @@
 <?php
 
-namespace Database\Seeders;
+    namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+    use Illuminate\Database\Seeder;
+    use Illuminate\Support\Facades\DB;
+    use App\Models\State;
 
-class CitySeeder extends Seeder
-{
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    class CitySeeder extends Seeder
     {
-        // Listado de ciudades con su estado asociado
-        $cities = [
-            ['name' => 'Puerto Ayacucho', 'state' => 'Amazonas'],
-            ['name' => 'Barcelona', 'state' => 'Anzoátegui'],
-            ['name' => 'San Fernando de Apure', 'state' => 'Apure'],
-            ['name' => 'Maracay', 'state' => 'Aragua'],
-            ['name' => 'Barinas', 'state' => 'Barinas'],
-            ['name' => 'Ciudad Bolívar', 'state' => 'Bolívar'],
-            ['name' => 'Valencia', 'state' => 'Carabobo'],
-            ['name' => 'San Carlos', 'state' => 'Cojedes'],
-            ['name' => 'Tucupita', 'state' => 'Delta Amacuro'],
-            ['name' => 'Caracas', 'state' => 'Distrito Capital'],
-            ['name' => 'Coro', 'state' => 'Falcón'],
-            ['name' => 'San Juan de los Morros', 'state' => 'Guárico'],
-            ['name' => 'Barquisimeto', 'state' => 'Lara'],
-            ['name' => 'Mérida', 'state' => 'Mérida'],
-            ['name' => 'Los Teques', 'state' => 'Miranda'],
-            ['name' => 'Maturín', 'state' => 'Monagas'],
-            ['name' => 'La Asunción', 'state' => 'Nueva Esparta'],
-            ['name' => 'Guanare', 'state' => 'Portuguesa'],
-            ['name' => 'Cumaná', 'state' => 'Sucre'],
-            ['name' => 'San Cristóbal', 'state' => 'Táchira'],
-            ['name' => 'Trujillo', 'state' => 'Trujillo'],
-            ['name' => 'La Guaira', 'state' => 'La Guaira'],
-            ['name' => 'San Felipe', 'state' => 'Yaracuy'],
-            ['name' => 'Maracaibo', 'state' => 'Zulia'],
-        ];
+        /**
+         * Run the database seeds.
+         */
+        public function run(): void
+        {
+            // 1. Obtener todos los estados para hacer la búsqueda más eficiente
+            $states = State::all()->keyBy('name');
 
-        foreach ($cities as $city) {
-            $stateId = DB::table('states')->where('name', $city['state'])->value('id');
+            // 2. Definir todas las ciudades con su estado asociado
+            $allCities = [
+                // Amazonas
+                ['name' => 'La Esmeralda', 'state' => 'Amazonas'],
+                ['name' => 'San Fernando de Atabapo', 'state' => 'Amazonas'],
+                ['name' => 'Puerto Ayacucho', 'state' => 'Amazonas'],
+                ['name' => 'Isla Ratón', 'state' => 'Amazonas'],
+                ['name' => 'San Juan de Manapiare', 'state' => 'Amazonas'],
+                ['name' => 'Maroa', 'state' => 'Amazonas'],
+                ['name' => 'San Carlos de Río Negro', 'state' => 'Amazonas'],
+                // Anzoátegui
+                ['name' => 'Anaco', 'state' => 'Anzoátegui'],
+                ['name' => 'Aragua de Barcelona', 'state' => 'Anzoátegui'],
+                ['name' => 'Barcelona', 'state' => 'Anzoátegui'],
+                ['name' => 'Lechería', 'state' => 'Anzoátegui'],
+                ['name' => 'Puerto Píritu', 'state' => 'Anzoátegui'],
+                ['name' => 'Valle de Guanape', 'state' => 'Anzoátegui'],
+                ['name' => 'Pariaguán', 'state' => 'Anzoátegui'],
+                ['name' => 'Guanta', 'state' => 'Anzoátegui'],
+                ['name' => 'Soledad', 'state' => 'Anzoátegui'],
+                ['name' => 'Mapire', 'state' => 'Anzoátegui'],
+                ['name' => 'Puerto La Cruz', 'state' => 'Anzoátegui'],
+                ['name' => 'Onoto', 'state' => 'Anzoátegui'],
+                ['name' => 'San Mateo', 'state' => 'Anzoátegui'],
+                ['name' => 'Clarines', 'state' => 'Anzoátegui'],
+                ['name' => 'Cantaura', 'state' => 'Anzoátegui'],
+                ['name' => 'Píritu', 'state' => 'Anzoátegui'],
+                ['name' => 'El Tigrito', 'state' => 'Anzoátegui'],
+                ['name' => 'Boca de Uchire', 'state' => 'Anzoátegui'],
+                ['name' => 'Santa Ana', 'state' => 'Anzoátegui'],
+                ['name' => 'El Tigre', 'state' => 'Anzoátegui'],
+                ['name' => 'El Chaparro', 'state' => 'Anzoátegui'],
+                // Apure
+                ['name' => 'Achaguas', 'state' => 'Apure'],
+                ['name' => 'Biruaca', 'state' => 'Apure'],
+                ['name' => 'Bruzual', 'state' => 'Apure'],
+                ['name' => 'Guasdualito', 'state' => 'Apure'],
+                ['name' => 'San Juan de Payara', 'state' => 'Apure'],
+                ['name' => 'Elorza', 'state' => 'Apure'],
+                ['name' => 'San Fernando de Apure', 'state' => 'Apure'],
+                // Aragua
+                ['name' => 'El Limón', 'state' => 'Aragua'],
+                ['name' => 'Turmero', 'state' => 'Aragua'],
+                ['name' => 'La Victoria', 'state' => 'Aragua'],
+                ['name' => 'Maracay', 'state' => 'Aragua'],
+                ['name' => 'San Sebastián de los Reyes', 'state' => 'Aragua'],
+                ['name' => 'San Casimiro', 'state' => 'Aragua'],
+                ['name' => 'Santa Cruz de Aragua', 'state' => 'Aragua'],
+                ['name' => 'El Consejo', 'state' => 'Aragua'],
+                ['name' => 'Palo Negro', 'state' => 'Aragua'],
+                ['name' => 'San Mateo', 'state' => 'Aragua'],
+                ['name' => 'Cagua', 'state' => 'Aragua'],
+                ['name' => 'Camatagua', 'state' => 'Aragua'],
+                ['name' => 'Barbacoas', 'state' => 'Aragua'],
+                ['name' => 'La Colonia Tovar', 'state' => 'Aragua'],
+                ['name' => 'Villa de Cura', 'state' => 'Aragua'],
+                // Barinas
+                ['name' => 'Sabaneta', 'state' => 'Barinas'],
+                ['name' => 'El Cantón', 'state' => 'Barinas'],
+                ['name' => 'Socopó', 'state' => 'Barinas'],
+                ['name' => 'Arismendi', 'state' => 'Barinas'],
+                ['name' => 'Barinas', 'state' => 'Barinas'],
+                ['name' => 'Barinitas', 'state' => 'Barinas'],
+                ['name' => 'Barrancas', 'state' => 'Barinas'],
+                ['name' => 'Obispos', 'state' => 'Barinas'],
+                ['name' => 'Ciudad Bolivia', 'state' => 'Barinas'],
+                ['name' => 'Libertad', 'state' => 'Barinas'],
+                ['name' => 'Ciudad de Nutrias', 'state' => 'Barinas'],
+                // Bolívar
+                ['name' => 'Ciudad Bolívar', 'state' => 'Bolívar'],
+                ['name' => 'Ciudad Guayana', 'state' => 'Bolívar'],
+                ['name' => 'Caicara del Orinoco', 'state' => 'Bolívar'],
+                ['name' => 'El Callao', 'state' => 'Bolívar'],
+                ['name' => 'Santa Elena de Uairén', 'state' => 'Bolívar'],
+                ['name' => 'Tumeremo', 'state' => 'Bolívar'],
+                ['name' => 'Upata', 'state' => 'Bolívar'],
+                ['name' => 'El Palmar', 'state' => 'Bolívar'],
+                ['name' => 'Guasipati', 'state' => 'Bolívar'],
+                // Carabobo
+                ['name' => 'Bejuma', 'state' => 'Carabobo'],
+                ['name' => 'Campo de Carabobo', 'state' => 'Carabobo'],
+                ['name' => 'Miranda', 'state' => 'Carabobo'],
+                ['name' => 'Guacara', 'state' => 'Carabobo'],
+                ['name' => 'Morón', 'state' => 'Carabobo'],
+                ['name' => 'Tocuyito', 'state' => 'Carabobo'],
+                ['name' => 'Los Guayos', 'state' => 'Carabobo'],
+                ['name' => 'Montalbán', 'state' => 'Carabobo'],
+                ['name' => 'Naguanagua', 'state' => 'Carabobo'],
+                ['name' => 'Puerto Cabello', 'state' => 'Carabobo'],
+                ['name' => 'San Diego', 'state' => 'Carabobo'],
+                ['name' => 'San Joaquín', 'state' => 'Carabobo'],
+                ['name' => 'Valencia', 'state' => 'Carabobo'],
+                // Cojedes
+                ['name' => 'Cojedes', 'state' => 'Cojedes'],
+                ['name' => 'Tinaquillo', 'state' => 'Cojedes'],
+                ['name' => 'Tinaco', 'state' => 'Cojedes'],
+                ['name' => 'Libertad', 'state' => 'Cojedes'],
+                ['name' => 'El Baúl', 'state' => 'Cojedes'],
+                ['name' => 'San Carlos', 'state' => 'Cojedes'],
+                ['name' => 'Macapo', 'state' => 'Cojedes'],
+                ['name' => 'El Pao', 'state' => 'Cojedes'],
+                // Delta Amacuro
+                ['name' => 'Tucupita', 'state' => 'Delta Amacuro'],
+                ['name' => 'Sierra Imataca', 'state' => 'Delta Amacuro'],
+                ['name' => 'Pedernales', 'state' => 'Delta Amacuro'],
+                // Distrito Capital
+                ['name' => 'Caracas', 'state' => 'Distrito Capital'],
+                // Falcón
+                ['name' => 'San Juan de los Cayos', 'state' => 'Falcón'],
+                ['name' => 'San Luis', 'state' => 'Falcón'],
+                ['name' => 'Capatárida', 'state' => 'Falcón'],
+                ['name' => 'La Vela de Coro', 'state' => 'Falcón'],
+                ['name' => 'Dabajuro', 'state' => 'Falcón'],
+                ['name' => 'Pedregal', 'state' => 'Falcón'],
+                ['name' => 'Pueblo Nuevo', 'state' => 'Falcón'],
+                ['name' => 'Churuguara', 'state' => 'Falcón'],
+                ['name' => 'Tucacas', 'state' => 'Falcón'],
+                ['name' => 'Coro', 'state' => 'Falcón'],
+                ['name' => 'Chichiriviche', 'state' => 'Falcón'],
+                ['name' => 'Píritu', 'state' => 'Falcón'],
+                ['name' => 'Mirimire', 'state' => 'Falcón'],
+                ['name' => 'La Cruz de Taratara', 'state' => 'Falcón'],
+                ['name' => 'Tocuyo de la Costa', 'state' => 'Falcón'],
+                ['name' => 'Santa Cruz de Bucaral', 'state' => 'Falcón'],
+                ['name' => 'Urumaco', 'state' => 'Falcón'],
+                ['name' => 'Puerto Cumarebo', 'state' => 'Falcón'],
+                // Guárico
+                ['name' => 'Calabozo', 'state' => 'Guárico'],
+                ['name' => 'San Juan de los Morros', 'state' => 'Guárico'],
+                ['name' => 'Altagracia de Orituco', 'state' => 'Guárico'],
+                ['name' => 'Valle de la Pascua', 'state' => 'Guárico'],
+                ['name' => 'Tucupido', 'state' => 'Guárico'],
+                ['name' => 'Zaraza', 'state' => 'Guárico'],
+                ['name' => 'Las Mercedes del Llano', 'state' => 'Guárico'],
+                ['name' => 'Chaguaramas', 'state' => 'Guárico'],
+                ['name' => 'El Sombrero', 'state' => 'Guárico'],
+                ['name' => 'El Socorro', 'state' => 'Guárico'],
+                ['name' => 'San José de Unare', 'state' => 'Guárico'],
+                ['name' => 'Santa María de Ipire', 'state' => 'Guárico'],
+                ['name' => 'Espino', 'state' => 'Guárico'],
+                ['name' => 'San Rafael de Laya', 'state' => 'Guárico'],
+                ['name' => 'Lezama', 'state' => 'Guárico'],
+                // Lara
+                ['name' => 'Barquisimeto', 'state' => 'Lara'],
+                ['name' => 'Cabudare', 'state' => 'Lara'],
+                ['name' => 'Carora', 'state' => 'Lara'],
+                ['name' => 'Quíbor', 'state' => 'Lara'],
+                ['name' => 'El Tocuyo', 'state' => 'Lara'],
+                ['name' => 'Duaca', 'state' => 'Lara'],
+                ['name' => 'Sarare', 'state' => 'Lara'],
+                ['name' => 'Sanare', 'state' => 'Lara'],
+                ['name' => 'Siquisique', 'state' => 'Lara'],
+                // Mérida
+                ['name' => 'Mérida', 'state' => 'Mérida'],
+                ['name' => 'Ejido', 'state' => 'Mérida'],
+                ['name' => 'El Vigía', 'state' => 'Mérida'],
+                ['name' => 'Lagunillas', 'state' => 'Mérida'],
+                ['name' => 'Tabay', 'state' => 'Mérida'],
+                ['name' => 'Tovar', 'state' => 'Mérida'],
+                ['name' => 'Nueva Bolivia', 'state' => 'Mérida'],
+                ['name' => 'Santa Cruz de Mora', 'state' => 'Mérida'],
+                ['name' => 'La Azulita', 'state' => 'Mérida'],
+                ['name' => 'Timotes', 'state' => 'Mérida'],
+                ['name' => 'Santo Domingo', 'state' => 'Mérida'],
+                ['name' => 'Mucuchíes', 'state' => 'Mérida'],
+                ['name' => 'Pueblo Llano', 'state' => 'Mérida'],
+                ['name' => 'Guaraque', 'state' => 'Mérida'],
+                ['name' => 'Arapuey', 'state' => 'Mérida'],
+                ['name' => 'Torondoy', 'state' => 'Mérida'],
+                ['name' => 'Zea', 'state' => 'Mérida'],
+                // Miranda
+                ['name' => 'Los Teques', 'state' => 'Miranda'],
+                ['name' => 'Guarenas', 'state' => 'Miranda'],
+                ['name' => 'Guatire', 'state' => 'Miranda'],
+                ['name' => 'Charallave', 'state' => 'Miranda'],
+                ['name' => 'Ocumare del Tuy', 'state' => 'Miranda'],
+                ['name' => 'Santa Teresa del Tuy', 'state' => 'Miranda'],
+                ['name' => 'Cúa', 'state' => 'Miranda'],
+                ['name' => 'San Francisco de Yare', 'state' => 'Miranda'],
+                ['name' => 'Petare', 'state' => 'Miranda'],
+                ['name' => 'Santa Lucía del Tuy', 'state' => 'Miranda'],
+                ['name' => 'Caucagua', 'state' => 'Miranda'],
+                ['name' => 'Higuerote', 'state' => 'Miranda'],
+                ['name' => 'Río Chico', 'state' => 'Miranda'],
+                ['name' => 'El Hatillo', 'state' => 'Miranda'],
+                ['name' => 'Baruta', 'state' => 'Miranda'],
+                ['name' => 'Chacao', 'state' => 'Miranda'],
+                ['name' => 'La Victoria', 'state' => 'Miranda'],
+                // Monagas
+                ['name' => 'Maturín', 'state' => 'Monagas'],
+                ['name' => 'Punta de Mata', 'state' => 'Monagas'],
+                ['name' => 'Caripito', 'state' => 'Monagas'],
+                ['name' => 'Temblador', 'state' => 'Monagas'],
+                ['name' => 'Caripe', 'state' => 'Monagas'],
+                ['name' => 'San Antonio de Capayacuar', 'state' => 'Monagas'],
+                ['name' => 'Tucupita', 'state' => 'Monagas'],
+                ['name' => 'Aguasay', 'state' => 'Monagas'],
+                ['name' => 'Aragua de Maturín', 'state' => 'Monagas'],
+                ['name' => 'Santa Bárbara', 'state' => 'Monagas'],
+                // Nueva Esparta
+                ['name' => 'La Asunción', 'state' => 'Nueva Esparta'],
+                ['name' => 'Porlamar', 'state' => 'Nueva Esparta'],
+                ['name' => 'Pampatar', 'state' => 'Nueva Esparta'],
+                ['name' => 'Juan Griego', 'state' => 'Nueva Esparta'],
+                ['name' => 'San Juan Bautista', 'state' => 'Nueva Esparta'],
+                ['name' => 'El Valle del Espíritu Santo', 'state' => 'Nueva Esparta'],
+                ['name' => 'Boca del Río', 'state' => 'Nueva Esparta'],
+                ['name' => 'Punta de Piedras', 'state' => 'Nueva Esparta'],
+                ['name' => 'San Pedro de Coche', 'state' => 'Nueva Esparta'],
+                // Portuguesa
+                ['name' => 'Guanare', 'state' => 'Portuguesa'],
+                ['name' => 'Acarigua', 'state' => 'Portuguesa'],
+                ['name' => 'Araure', 'state' => 'Portuguesa'],
+                ['name' => 'Píritu', 'state' => 'Portuguesa'],
+                ['name' => 'Villa Bruzual', 'state' => 'Portuguesa'],
+                ['name' => 'Biscucuy', 'state' => 'Portuguesa'],
+                ['name' => 'Guanarito', 'state' => 'Portuguesa'],
+                ['name' => 'Ospino', 'state' => 'Portuguesa'],
+                ['name' => 'Papelón', 'state' => 'Portuguesa'],
+                ['name' => 'San Genaro de Boconoíto', 'state' => 'Portuguesa'],
+                ['name' => 'Turén', 'state' => 'Portuguesa'],
+                ['name' => 'Agua Blanca', 'state' => 'Portuguesa'],
+                // Sucre
+                ['name' => 'Cumaná', 'state' => 'Sucre'],
+                ['name' => 'Carúpano', 'state' => 'Sucre'],
+                ['name' => 'Güiria', 'state' => 'Sucre'],
+                ['name' => 'Río Caribe', 'state' => 'Sucre'],
+                ['name' => 'San Antonio del Golfo', 'state' => 'Sucre'],
+                ['name' => 'Yaguaraparo', 'state' => 'Sucre'],
+                ['name' => 'Cumanacoa', 'state' => 'Sucre'],
+                ['name' => 'Tunapuy', 'state' => 'Sucre'],
+                ['name' => 'El Pilar', 'state' => 'Sucre'],
+                // Táchira
+                ['name' => 'San Cristóbal', 'state' => 'Táchira'],
+                ['name' => 'Táriba', 'state' => 'Táchira'],
+                ['name' => 'La Fría', 'state' => 'Táchira'],
+                ['name' => 'San Antonio del Táchira', 'state' => 'Táchira'],
+                ['name' => 'Ureña', 'state' => 'Táchira'],
+                ['name' => 'Rubio', 'state' => 'Táchira'],
+                ['name' => 'La Grita', 'state' => 'Táchira'],
+                ['name' => 'Capacho Nuevo', 'state' => 'Táchira'],
+                ['name' => 'Capacho Viejo', 'state' => 'Táchira'],
+                ['name' => 'Colón', 'state' => 'Táchira'],
+                // Trujillo
+                ['name' => 'Trujillo', 'state' => 'Trujillo'],
+                ['name' => 'Valera', 'state' => 'Trujillo'],
+                ['name' => 'Boconó', 'state' => 'Trujillo'],
+                ['name' => 'Carache', 'state' => 'Trujillo'],
+                ['name' => 'Escuque', 'state' => 'Trujillo'],
+                ['name' => 'Betijoque', 'state' => 'Trujillo'],
+                ['name' => 'Pampanito', 'state' => 'Trujillo'],
+                ['name' => 'Sabana de Mendoza', 'state' => 'Trujillo'],
+                ['name' => 'Motatán', 'state' => 'Trujillo'],
+                ['name' => 'La Quebrada', 'state' => 'Trujillo'],
+                // La Guaira
+                ['name' => 'La Guaira', 'state' => 'La Guaira'],
+                ['name' => 'Maiquetía', 'state' => 'La Guaira'],
+                ['name' => 'Caraballeda', 'state' => 'La Guaira'],
+                ['name' => 'Catia La Mar', 'state' => 'La Guaira'],
+                ['name' => 'Macuto', 'state' => 'La Guaira'],
+                // Yaracuy
+                ['name' => 'San Felipe', 'state' => 'Yaracuy'],
+                ['name' => 'Yaritagua', 'state' => 'Yaracuy'],
+                ['name' => 'Chivacoa', 'state' => 'Yaracuy'],
+                ['name' => 'Nirgua', 'state' => 'Yaracuy'],
+                ['name' => 'Cocorote', 'state' => 'Yaracuy'],
+                ['name' => 'Independencia', 'state' => 'Yaracuy'],
+                ['name' => 'Urachiche', 'state' => 'Yaracuy'],
+                // Zulia
+                ['name' => 'Maracaibo', 'state' => 'Zulia'],
+                ['name' => 'Cabimas', 'state' => 'Zulia'],
+                ['name' => 'Ciudad Ojeda', 'state' => 'Zulia'],
+                ['name' => 'Machiques', 'state' => 'Zulia'],
+                ['name' => 'San Francisco', 'state' => 'Zulia'],
+                ['name' => 'Santa Rita', 'state' => 'Zulia'],
+                ['name' => 'Valmore Rodríguez', 'state' => 'Zulia'],
+                ['name' => 'La Concepción', 'state' => 'Zulia'],
+            ];
 
-            if ($stateId) {
-                DB::table('cities')->insert([
-                    'name' => $city['name'],
-                    'state_id' => $stateId,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+            // 3. Insertar las ciudades en la base de datos
+            foreach ($allCities as $city) {
+                $stateId = $states[$city['state']]->id ?? null;
+
+                if ($stateId) {
+                    DB::table('cities')->insert([
+                        'name' => $city['name'],
+                        'state_id' => $stateId,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
         }
     }
-}
