@@ -29,7 +29,7 @@ class ResetPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Recuperación de Contraseña - Intelcon',
+            subject: 'Recuperación de Contraseña - Intelcom',
         );
     }
 

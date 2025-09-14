@@ -59,7 +59,7 @@
                     <!-- Pie de página -->
                     <tr>
                         <td align="center" style="padding: 20px 0; color: #888888; font-size: 12px;">
-                            &copy; {{ date('Y') }} Intelcon. Todos los derechos reservados.
+                            &copy; {{ date('Y') }} Intelcom. Todos los derechos reservados.
                         </td>
                     </tr>
                 </table>

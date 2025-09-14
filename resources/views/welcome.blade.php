@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intelcon - Servicios de Internet de Alta Velocidad</title>
+    <title>Intelcom - Servicios de Internet de Alta Velocidad</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <style>
         * {
@@ -17,6 +17,12 @@
             line-height: 1.6;
             color: #333;
             overflow-x: hidden;
+        }
+        
+        /* Estilos para el link del teléfono */
+        .contact-card a {
+            text-decoration: none;
+            color: #333;
         }
 
         .tech-gradient {
@@ -59,23 +65,20 @@
             align-items: center;
         }
 
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #0066cc;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .logo a {
+            display: flex;
+            align-items: center;
         }
-
-        .logo i {
-            margin-right: 0.5rem;
-            color: #00ccff;
+        
+        .logo img {
+            height: 50px; 
         }
 
         .nav-links {
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
         }
 
         .nav-links a {
@@ -88,9 +91,15 @@
         .nav-links a:hover {
             color: #0066cc;
         }
+        
+        .hamburger, .close-menu {
+            display: none;
+            cursor: pointer;
+            font-size: 1.8rem;
+        }
 
         .hero {
-            padding: 8rem 0 6rem;
+            padding: 10rem 0 8rem;
             text-align: center;
             color: white;
             position: relative;
@@ -122,36 +131,11 @@
 
         .hero .subtitle {
             font-size: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem; 
             opacity: 0.95;
             animation: slideInUp 1s ease-out 0.2s both;
         }
-
-        .speed-showcase {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            margin: 2rem 0;
-            animation: slideInUp 1s ease-out 0.4s both;
-        }
-
-        .speed-meter {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-        }
-
-        .speed-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #00ccff;
-            display: block;
-        }
-
+        
         .cta-buttons {
             display: flex;
             gap: 1rem;
@@ -211,12 +195,39 @@
             background: white;
             transform: skewY(-2deg);
         }
+        
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(45deg, #0066cc, #00ccff);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            text-align: center; 
+            font-size: 1.2rem; 
+            margin-bottom: 4rem;
+            color: #555;
+        }
 
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
-            margin-top: 4rem;
+            max-width: 800px; 
+            margin: 0 auto;
         }
 
         .service-card {
@@ -226,29 +237,11 @@
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid #dee2e6;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 204, 255, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .service-card:hover::before {
-            left: 100%;
         }
 
         .service-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 25px 50px rgba(0, 102, 204, 0.15);
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
 
         .service-icon {
@@ -262,112 +255,71 @@
             margin: 0 auto 2rem;
             font-size: 2.5rem;
             color: white;
-            position: relative;
-            z-index: 2;
         }
 
         .plans {
             background: #f8f9fa;
             padding: 6rem 0;
-        }
-
-        .plans-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-
-        .plan-card {
-            background: white;
-            padding: 3rem 2rem;
-            border-radius: 20px;
             text-align: center;
-            border: 2px solid #dee2e6;
-            transition: all 0.3s ease;
-            position: relative;
         }
 
-        .plan-card.featured {
-            border-color: #00ccff;
-            transform: scale(1.05);
-            box-shadow: 0 20px 40px rgba(0, 204, 255, 0.2);
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            margin-bottom: 4rem;
         }
 
-        .plan-card.featured::before {
-            content: 'Más Popular';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #00ccff;
-            color: white;
-            padding: 0.5rem 2rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+        .benefit-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid #dee2e6;
         }
-
-        .plan-price {
-            font-size: 3rem;
-            font-weight: bold;
+        
+        .benefit-item i {
+            font-size: 2.5rem;
             color: #0066cc;
-            margin: 1rem 0;
+            margin-bottom: 1rem;
         }
 
-        .plan-speed {
-            font-size: 2rem;
-            color: #00ccff;
-            font-weight: bold;
-            margin-bottom: 2rem;
+        .benefit-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
         }
-
-        .plan-features {
-            list-style: none;
-            margin: 2rem 0;
-        }
-
-        .plan-features li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .plan-features li:last-child {
-            border-bottom: none;
-        }
-
-        .plan-features i {
-            color: #28a745;
-            margin-right: 0.5rem;
-        }
-
-        .coverage {
+        
+        .why-us {
             background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
             color: white;
             padding: 6rem 0;
             text-align: center;
         }
 
-        .coverage-stats {
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
             margin-top: 4rem;
         }
 
-        .stat-item {
-            padding: 2rem;
+        .feature-item {
+            padding: 2.5rem 2rem;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             backdrop-filter: blur(10px);
         }
 
-        .stat-number {
+        .feature-item i {
             font-size: 3rem;
-            font-weight: bold;
             color: #00ccff;
-            display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
         }
 
         .contact-section {
@@ -407,26 +359,7 @@
             font-size: 1.8rem;
             color: white;
         }
-
-        .section-title {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(45deg, #0066cc, #00ccff);
-            border-radius: 2px;
-        }
-
+        
         .floating {
             animation: floating 3s ease-in-out infinite;
         }
@@ -441,43 +374,75 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
         footer {
             background: #1a1a1a;
             color: white;
             text-align: center;
             padding: 3rem 0;
         }
-
+        
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-bottom: 2rem;
+            text-align: left;
         }
 
         .footer-section h3 {
             color: #00ccff;
             margin-bottom: 1rem;
         }
+        
+        .copyright {
+            border-top: 1px solid #333; 
+            padding-top: 2rem; 
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 992px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                max-width: 320px;
+                height: 100vh;
+                background: #fff;
+                flex-direction: column;
+                padding: 5rem 2rem 2rem;
+                gap: 2.5rem;
+                justify-content: flex-start;
+                align-items: flex-start;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+                transition: right 0.4s ease-in-out;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+
+            .close-menu {
+                display: block;
+                position: absolute;
+                top: 1.5rem;
+                right: 1.5rem;
+            }
+        }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .speed-showcase { flex-direction: column; gap: 1rem; }
+            .hero h1 { font-size: 2.8rem; }
+            .section-title { font-size: 2.5rem; }
             .cta-buttons { flex-direction: column; align-items: center; }
-            .nav-links { display: none; }
-            .services-grid { grid-template-columns: 1fr; }
-            .plans-grid { grid-template-columns: 1fr; }
-            .plan-card.featured { transform: none; }
+            .services-grid, .plans-grid, .features-grid, .footer-content { 
+                grid-template-columns: 1fr; 
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -486,20 +451,26 @@
         <nav class="container">
             <div class="logo">
                 <a href="/">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo de Intelcon" style="height: 125px; margin-right: 10px; vertical-align: middle;">
+                     <img src="{{ asset('images/logo.png') }}" alt="Logo de Intelcom">
                 </a>
             </div>
-            <ul class="nav-links">
-                <li><a href="#servicios">Servicios</a></li>
+            
+            <ul class="nav-links" id="nav-menu">
+                <div class="close-menu" id="close-btn"><i class="fas fa-times"></i></div>
+                <li><a href="#servicios">Soluciones</a></li>
                 <li><a href="#planes">Planes</a></li>
-                <li><a href="#cobertura">Cobertura</a></li>
+                <li><a href="#porque-intelcom">Nosotros</a></li>
                 <li><a href="#contacto">Contacto</a></li>
                 <li>
-                    <a href="{{ route('login') }}" class="btn-primary" style="border-radius: 30px; padding: 10px 20px;">
+                    <a href="{{ route('login') }}" class="btn-primary" style="padding: 10px 25px;">
                         <i class="fas fa-right-to-bracket"></i> Iniciar Sesión
                     </a>
                 </li>
             </ul>
+
+            <div class="hamburger" id="hamburger-btn">
+                <i class="fas fa-bars"></i>
+            </div>
         </nav>
     </header>
 
@@ -508,27 +479,11 @@
             <div class="container">
                 <div class="hero-content">
                     <h1 class="floating">Internet de Alta Velocidad</h1>
-                    <p class="subtitle">Conectividad confiable para tu hogar y negocio</p>
+                    <p class="subtitle">Conectividad confiable y a tu medida, donde quiera que estés.</p>
                     
-                    <div class="speed-showcase">
-                        <div class="speed-meter pulse">
-                            <span class="speed-number">100</span>
-                            <span>Mbps</span>
-                        </div>
-                        <div class="speed-meter pulse">
-                            <span class="speed-number">300</span>
-                            <span>Mbps</span>
-                        </div>
-                        <div class="speed-meter pulse">
-                            <span class="speed-number">500</span>
-                            <span>Mbps</span>
-                        </div>
-                    </div>
-
                     <div class="cta-buttons">
-                        {{-- Botón para Iniciar Sesión --}}
-                        <a href="{{ route('login') }}" class="btn-primary">
-                            <i class="fas fa-right-to-bracket"></i> Iniciar Sesión
+                        <a href="#planes" class="btn-primary">
+                            <i class="fas fa-wifi"></i> Conoce Más
                         </a>
                         <a href="#contacto" class="btn-secondary">
                             <i class="fas fa-phone"></i> Contactar
@@ -541,8 +496,8 @@
 
     <section class="services" id="servicios">
         <div class="container">
-            <h2 class="section-title">Nuestros Servicios</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">Soluciones de conectividad para cada necesidad</p>
+            <h2 class="section-title">Nuestras Soluciones</h2>
+            <p class="section-subtitle">Conectividad para cada necesidad.</p>
             
             <div class="services-grid">
                 <div class="service-card">
@@ -550,7 +505,7 @@
                         <i class="fas fa-home"></i>
                     </div>
                     <h3>Internet Residencial</h3>
-                    <p>Planes de internet de alta velocidad para tu hogar. Navega, transmite y juega sin límites con nuestra fibra óptica de última generación.</p>
+                    <p>Conexión estable y veloz para tu hogar. Navega, transmite contenido y mantente conectado sin interrupciones.</p>
                 </div>
 
                 <div class="service-card">
@@ -558,15 +513,7 @@
                         <i class="fas fa-building"></i>
                     </div>
                     <h3>Internet Empresarial</h3>
-                    <p>Soluciones corporativas con ancho de banda dedicado, IP fija y soporte técnico 24/7 para mantener tu negocio siempre conectado.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h3>Soporte Técnico</h3>
-                    <p>Atención personalizada las 24 horas del día, los 7 días de la semana. Nuestro equipo de expertos está aquí para ayudarte.</p>
+                    <p>Soluciones de conectividad robustas para asegurar la productividad y continuidad de tu negocio.</p>
                 </div>
             </div>
         </div>
@@ -574,76 +521,62 @@
 
     <section class="plans" id="planes">
         <div class="container">
-            <h2 class="section-title">Planes de Internet</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">Elige el plan perfecto para ti</p>
+            <h2 class="section-title">Planes Flexibles para Ti</h2>
+            <p class="section-subtitle">
+                Ofrecemos una variedad de planes que se adaptan a tu ubicación y necesidades.
+                <br><strong>Tenemos velocidades desde 10 megas en adelante.</strong>
+            </p>
             
-            <div class="plans-grid">
-                <div class="plan-card">
-                    <h3>Plan Básico</h3>
-                    <div class="plan-price">$25</div>
-                    <div class="plan-speed">100 Mbps</div>
-                    <ul class="plan-features">
-                        <li><i class="fas fa-check"></i> Velocidad hasta 100 Mbps</li>
-                        <li><i class="fas fa-check"></i> Navegación ilimitada</li>
-                        <li><i class="fas fa-check"></i> Soporte técnico básico</li>
-                        <li><i class="fas fa-check"></i> Instalación gratuita</li>
-                    </ul>
-                    <a href="#contacto" class="btn-primary">Contratar</a>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Alta Velocidad</h3>
+                    <p>Disfruta de una conexión rápida para todas tus actividades en línea.</p>
                 </div>
-
-                <div class="plan-card featured">
-                    <h3>Plan Premium</h3>
-                    <div class="plan-price">$40</div>
-                    <div class="plan-speed">300 Mbps</div>
-                    <ul class="plan-features">
-                        <li><i class="fas fa-check"></i> Velocidad hasta 300 Mbps</li>
-                        <li><i class="fas fa-check"></i> Navegación ilimitada</li>
-                        <li><i class="fas fa-check"></i> Soporte técnico 24/7</li>
-                        <li><i class="fas fa-check"></i> Instalación gratuita</li>
-                        <li><i class="fas fa-check"></i> Router WiFi 6 incluido</li>
-                    </ul>
-                    <a href="#contacto" class="btn-primary">Contratar</a>
+                 <div class="benefit-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Precios Justos</h3>
+                    <p>Planes competitivos adaptados a la oferta de tu zona.</p>
                 </div>
-
-                <div class="plan-card">
-                    <h3>Plan Ultra</h3>
-                    <div class="plan-price">$60</div>
-                    <div class="plan-speed">500 Mbps</div>
-                    <ul class="plan-features">
-                        <li><i class="fas fa-check"></i> Velocidad hasta 500 Mbps</li>
-                        <li><i class="fas fa-check"></i> Navegación ilimitada</li>
-                        <li><i class="fas fa-check"></i> Soporte técnico prioritario</li>
-                        <li><i class="fas fa-check"></i> Instalación gratuita</li>
-                        <li><i class="fas fa-check"></i> Router WiFi 6 Pro incluido</li>
-                        <li><i class="fas fa-check"></i> IP fija gratuita</li>
-                    </ul>
-                    <a href="#contacto" class="btn-primary">Contratar</a>
+                <div class="benefit-item">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <h3>Conexión Estable</h3>
+                    <p>Navega con la confianza de una red robusta y con mínimo de interrupciones.</p>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Amplia Cobertura</h3>
+                    <p>Llegamos a cada vez más sectores para mantenerte conectado.</p>
                 </div>
             </div>
+
+            <a href="#contacto" class="btn-primary">
+                <i class="fas fa-paper-plane"></i> Consulta los Planes en tu Zona
+            </a>
+
         </div>
     </section>
 
-    <section class="coverage" id="cobertura">
+    <section class="why-us" id="porque-intelcom">
         <div class="container">
-            <h2 class="section-title" style="color: white;">Nuestra Cobertura</h2>
-            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Llevamos internet de alta velocidad a toda la región</p>
+            <h2 class="section-title" style="color: white;">Por Qué Elegir Intelcom</h2>
+            <p class="section-subtitle" style="color: #eee;">Comprometidos con ofrecerte la mejor conexión y un servicio de calidad.</p>
             
-            <div class="coverage-stats">
-                <div class="stat-item">
-                    <span class="stat-number">50+</span>
-                    <span>Municipios</span>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-rocket"></i>
+                    <h3>Tecnología de Punta</h3>
+                    <p>Utilizamos redes de fibra óptica de última generación para garantizarte una conexión veloz y de baja latencia.</p>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">200+</span>
-                    <span>Barrios</span>
+                <div class="feature-item">
+                    <i class="fas fa-map-signs"></i>
+                    <h3>Cobertura en Expansión</h3>
+                    <p>Trabajamos día a día para llevar nuestro servicio a más zonas. ¡Consulta si ya estamos en la tuya!</p>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">10K+</span>
-                    <span>Clientes Satisfechos</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">99.9%</span>
-                    <span>Tiempo de Actividad</span>
+                <div class="feature-item">
+                    <i class="fas fa-tools"></i>
+                    <h3>Instalación Profesional</h3>
+                    <p>Nuestro equipo técnico se encarga de todo para que empieces a navegar sin complicaciones.</p>
                 </div>
             </div>
         </div>
@@ -652,7 +585,7 @@
     <section class="contact-section" id="contacto">
         <div class="container">
             <h2 class="section-title">Contáctanos</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">¿Listo para mejorar tu conexión? Estamos aquí para ayudarte</p>
+            <p class="section-subtitle">¿Listo para mejorar tu conexión? Consulta la cobertura y planes en tu zona.</p>
             
             <div class="contact-grid">
                 <div class="contact-card">
@@ -660,8 +593,10 @@
                         <i class="fas fa-phone"></i>
                     </div>
                     <h3>Teléfono</h3>
-                    <p>+57 300 123 4567</p>
-                    <p>Línea de atención 24/7</p>
+                    <a href="tel:+584128202071">
+                        <p>+58 412-8202071</p>
+                    </a>
+                    <p>Línea de atención</p>
                 </div>
 
                 <div class="contact-card">
@@ -669,8 +604,8 @@
                         <i class="fas fa-envelope"></i>
                     </div>
                     <h3>Email</h3>
-                    <p>info@intelcon.com</p>
-                    <p>ventas@intelcon.com</p>
+                    <p>info@intelcom.com</p>
+                    <p>ventas@intelcom.com</p>
                 </div>
 
                 <div class="contact-card">
@@ -687,8 +622,10 @@
                         <i class="fab fa-whatsapp"></i>
                     </div>
                     <h3>WhatsApp</h3>
-                    <p>+57 300 123 4567</p>
-                    <p>Chat directo</p>
+                    <a href="https://wa.me/584126304159">
+                        <p>+58 412-6304159</p>
+                    </a>
+                    <p>Chatea con un asesor</p>
                 </div>
             </div>
         </div>
@@ -698,30 +635,43 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Intelcon</h3>
+                    <h3>Intelcom</h3>
                     <p>Tu proveedor de confianza para internet de alta velocidad. Conectamos tu mundo digital.</p>
                 </div>
                 <div class="footer-section">
                     <h3>Servicios</h3>
-                    <p>Internet Residencial<br>Internet Empresarial<br>Soporte Técnico</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Síguenos</h3>
-                    <p>
-                        <i class="fab fa-facebook" style="margin: 0 0.5rem;"></i>
-                        <i class="fab fa-instagram" style="margin: 0 0.5rem;"></i>
-                        <i class="fab fa-twitter" style="margin: 0 0.5rem;"></i>
-                    </p>
+                    <p>Internet Residencial<br>Internet Empresarial</p>
                 </div>
             </div>
-            <div style="border-top: 1px solid #333; padding-top: 2rem; margin-top: 2rem;">
-                <p>&copy; 2025 Intelcon. Todos los derechos reservados.</p>
+            <div class="copyright">
+                <p>&copy; 2025 Intelcom. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Navegación suave
+        // --- Lógica para el Menú Responsive ---
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const navMenu = document.getElementById('nav-menu');
+        const closeBtn = document.getElementById('close-btn');
+        const navLinks = document.querySelectorAll('#nav-menu a');
+
+        hamburgerBtn.addEventListener('click', () => {
+            navMenu.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+
+        // --- Navegación suave ---
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -735,62 +685,15 @@
             });
         });
 
-        // Animación de contadores
-        const animateCounters = () => {
-            const counters = document.querySelectorAll('.stat-number');
-            counters.forEach(counter => {
-                const target = parseInt(counter.textContent.replace(/\D/g, ''));
-                const suffix = counter.textContent.replace(/[\d.]/g, '');
-                let count = 0;
-                const increment = target / 100;
-                
-                const updateCounter = () => {
-                    if (count < target) {
-                        count += increment;
-                        counter.textContent = Math.ceil(count) + suffix;
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target + suffix;
-                    }
-                };
-                updateCounter();
-            });
-        };
-
-        // Observer para animaciones
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    if (entry.target.classList.contains('coverage')) {
-                        animateCounters();
-                        observer.unobserve(entry.target);
-                    }
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observar elementos para animación
-        document.querySelectorAll('.service-card, .plan-card, .contact-card, .coverage').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
-            observer.observe(el);
-        });
-
-        // Header scroll effect
+        // --- Efecto del Header al hacer scroll ---
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
-            if (window.scrollY > 100) {
+            if (window.scrollY > 50) {
                 header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
             } else {
                 header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
             }
         });
     </script>
