@@ -73,7 +73,7 @@
         }
         
         .logo img {
-            height: 125px; 
+            height: 128px; 
         }
 
         .nav-links {
