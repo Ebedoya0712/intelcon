@@ -23,6 +23,8 @@
         .contact-card a {
             text-decoration: none;
             color: #333;
+            display: block; /* Para que el link ocupe toda la línea */
+            margin: 0.25rem 0;
         }
 
         .tech-gradient {
@@ -266,7 +268,7 @@
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            gap: 1.5rem;
             margin-top: 3rem;
             margin-bottom: 4rem;
         }
@@ -439,7 +441,7 @@
             .hero h1 { font-size: 2.8rem; }
             .section-title { font-size: 2.5rem; }
             .cta-buttons { flex-direction: column; align-items: center; }
-            .services-grid, .plans-grid, .features-grid, .footer-content { 
+            .services-grid, .benefits-grid, .features-grid, .footer-content { 
                 grid-template-columns: 1fr; 
                 text-align: center;
             }
@@ -544,9 +546,9 @@
                     <p>Navega con la confianza de una red robusta y con mínimo de interrupciones.</p>
                 </div>
                 <div class="benefit-item">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <h3>Amplia Cobertura</h3>
-                    <p>Llegamos a cada vez más sectores para mantenerte conectado.</p>
+                    <i class="fas fa-headset"></i>
+                    <h3>Atención al Cliente</h3>
+                    <p>Nuestro equipo está listo para ayudarte con un servicio cercano y eficiente.</p>
                 </div>
             </div>
 
@@ -565,13 +567,13 @@
             <div class="features-grid">
                 <div class="feature-item">
                     <i class="fas fa-rocket"></i>
-                    <h3>Tecnología de Punta</h3>
-                    <p>Utilizamos redes de fibra óptica de última generación para garantizarte una conexión veloz y de baja latencia.</p>
+                    <h3>Fibra Óptica</h3>
+                    <p>Utilizamos redes de fibra de última generación para garantizarte una conexión veloz y de baja latencia.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-map-signs"></i>
-                    <h3>Cobertura en Expansión</h3>
-                    <p>Trabajamos día a día para llevar nuestro servicio a más zonas. ¡Consulta si ya estamos en la tuya!</p>
+                    <i class="fas fa-wifi"></i>
+                    <h3>Enlaces Inalámbricos</h3>
+                    <p>Llegamos a donde otros no pueden con nuestra tecnología de enlaces inalámbricos de alta capacidad.</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-tools"></i>
@@ -593,10 +595,8 @@
                         <i class="fas fa-phone"></i>
                     </div>
                     <h3>Teléfono</h3>
-                    <a href="tel:+584128202071">
-                        <p>+58 412-8202071</p>
-                    </a>
-                    <p>Línea de atención</p>
+                    <a href="tel:+584128202071"><p>+58 412-8202071</p></a>
+                    <a href="tel:+584126304159"><p>+58 412-6304159</p></a>
                 </div>
 
                 <div class="contact-card">
@@ -604,8 +604,7 @@
                         <i class="fas fa-envelope"></i>
                     </div>
                     <h3>Email</h3>
-                    <p>info@intelcom.com</p>
-                    <p>ventas@intelcom.com</p>
+                    <p>Administracion@intelcomve.com</p>
                 </div>
 
                 <div class="contact-card">
@@ -622,10 +621,8 @@
                         <i class="fab fa-whatsapp"></i>
                     </div>
                     <h3>WhatsApp</h3>
-                    <a href="https://wa.me/584126304159">
-                        <p>+58 412-6304159</p>
-                    </a>
-                    <p>Chatea con un asesor</p>
+                    <a href="https://wa.me/584128202071"><p>+58 412-8202071</p></a>
+                    <a href="https://wa.me/584126304159"><p>+58 412-6304159</p></a>
                 </div>
             </div>
         </div>
