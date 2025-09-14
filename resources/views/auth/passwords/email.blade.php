@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña - Intelcon</title>
+    <title>Recuperar Contraseña - Intelcom</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { background: linear-gradient(135deg, #007bff, #33A5FF); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
