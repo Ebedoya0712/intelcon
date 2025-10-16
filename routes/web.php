@@ -13,7 +13,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ServiceAssignmentController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\SolicitudController; // Corregido para apuntar a la carpeta Auth
+use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ZoneController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -43,6 +43,7 @@ Route::get('register/complete', [RegistrationCompletionController::class, 'showC
 Route::post('register/complete', [RegistrationCompletionController::class, 'complete'])->name('register.complete');
 
 // Rutas de Recuperación de Contraseña
+// RUTA DE CHECK-PASSWORD ELIMINADA DE WEB.PHP (VA EN API.PHP)
 Route::get('forgot-password', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');

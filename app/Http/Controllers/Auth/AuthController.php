@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Mail\ResetPasswordMail;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -47,35 +48,58 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        // Validación inicial solo de la identificación. La contraseña se valida después.
+        $request->validate([
             'identification' => 'required|string',
-            'password' => 'required|string',
         ]);
 
         $user = User::where('identification', $request->identification)->first();
 
         // Escenario 1: El usuario NO existe en absoluto
         if (!$user) {
-            return back()->with('error_user_not_found', 'El número de identificación no se encuentra en nuestros registros.');
+            // Usamos withErrors para que el mensaje se muestre junto al campo 'identification'
+            return back()->withErrors(['identification' => 'El número de identificación no se encuentra en nuestros registros.'])
+                         ->withInput($request->only('identification'));
         }
 
         // Escenario 2: El usuario existe PERO no ha completado su registro (no tiene contraseña)
         if (is_null($user->password)) {
             // Redirigimos al formulario para completar el registro
             return redirect()->route('register.show_completion_form')
-                            ->with('identification', $user->identification);
+                             ->with('identification', $user->identification);
         }
 
+        // Si llegamos aquí, el usuario sí existe y tiene una contraseña, por lo que la validamos ahora
+        $credentials = $request->validate([
+            'identification' => 'required|string',
+            'password' => 'required|string', // AHORA SÍ es requerido
+        ]);
+        
         // Escenario 3: El usuario existe y tiene contraseña, pero es incorrecta
         if (!Hash::check($request->password, $user->password)) {
             return back()->withErrors(['identification' => 'La contraseña es incorrecta.'])
-                        ->withInput($request->only('identification'));
+                         ->withInput($request->only('identification'));
         }
 
         // Escenario 4: ÉXITO
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
         return redirect()->intended('dashboard');
+    }
+
+    /**
+     * Nuevo método API para que el frontend verifique si una cédula requiere contraseña.
+     */
+    public function checkPasswordStatus(string $identification): JsonResponse
+    {
+        $user = User::where('identification', $identification)->first();
+
+        // Determina si el usuario existe Y ya tiene una contraseña (password no es null)
+        $requiresPassword = $user && !is_null($user->password);
+
+        return response()->json([
+            'requires_password' => $requiresPassword
+        ]);
     }
 
     /**
